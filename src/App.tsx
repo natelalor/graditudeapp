@@ -24,13 +24,15 @@ function App() {
                 <Star
                     diameter={100}
                     onClick={() => fetchDataFormDynamoDb()}
-                > Fetch
+                >
+                    Fetch
                 </Star>
 
                 <Star
                     diameter={30}
                     onClick={() => addDataToDynamoDB()}
-                > Put
+                >
+                    Put
                 </Star>
             </header>
         </div>
