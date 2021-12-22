@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { fetchData, putData } from './db';
 
+import { Bomba, Hat } from './Hat';
 
 function App() {
 
@@ -26,6 +27,10 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
+
+        <Hat thread="cotton" size="medium" defaultQ={67}/>
+
+        <Bomba />
 
         <a
           className="App-link"
