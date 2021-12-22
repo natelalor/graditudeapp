@@ -1,6 +1,7 @@
-import { HTMLAttributes, ReactNode, useState } from "react";
+import { HTMLAttributes, ReactNode, useState } from 'react';
 
-import classes from "./Star.module.scss";
+import classes from './Star.module.scss';
+
 
 export interface StarProps extends HTMLAttributes<HTMLDivElement> {
     brightness?: number;
@@ -8,8 +9,10 @@ export interface StarProps extends HTMLAttributes<HTMLDivElement> {
     children?: ReactNode;
 }
 
-export function Star({ brightness = 1, diameter , children, ...props }: StarProps) {
-    const [lumens, setLumens] = useState(brightness);
+export function Star({
+    brightness = 1, diameter, children, ...props
+}: StarProps) {
+    const [ lumens, setLumens ] = useState(brightness);
 
     function handleClick() {
         setLumens(lumens - 0.1);
@@ -23,11 +26,11 @@ export function Star({ brightness = 1, diameter , children, ...props }: StarProp
             style={{
                 background: `rgba(255, 255, 255, ${lumens})`,
                 width: `${diameter}px`,
-                height: `${diameter}px`,
+                height: `${diameter}px`
             }}
             {...props}
         >
             {children}
         </div>
-    )
+    );
 }

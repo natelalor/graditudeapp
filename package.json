@@ -31,6 +31,11 @@
       "react-app/jest"
     ]
   },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix --max-warnings=0"
+    ]
+  },
   "browserslist": {
     "production": [
       ">0.2%",

@@ -1,0 +1,193 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+  "rules": {
+    "array-bracket-newline": ["warn", {
+      "multiline": true,
+      "minItems": 3
+    }],
+    "array-bracket-spacing": ["warn", "always"],
+    "block-spacing": ["warn", "always"],
+    "brace-style": ["warn", "1tbs"],
+    "camelcase": "warn",
+    "capitalized-comments": "off",
+    "comma-dangle": ["warn", "never"],
+    "comma-spacing": ["warn", {
+      "before": false,
+      "after": true
+    }],
+    "comma-style": "warn",
+    "computed-property-spacing": "warn",
+    "curly": "warn",
+    "eol-last": "warn",
+    "function-call-argument-newline": "off",
+    "func-call-spacing": "warn",
+    "func-names": "warn",
+    "function-paren-newline": ["warn", "consistent"],
+    "implicit-arrow-linebreak": ["warn", "beside"],
+    "indent": ["warn", 4],
+    "key-spacing": ["warn", {
+      "beforeColon": false,
+      "afterColon": true
+    }],
+    "keyword-spacing": "warn",
+    "linebreak-style": ["warn", "windows"],
+    "max-len": ["warn", {
+      "code": 120,
+      "tabWidth": 4,
+      "ignoreUrls": true,
+      "ignoreComments": false,
+      "ignoreRegExpLiterals": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true
+    }],
+    "max-statements-per-line": ["warn", { "max": 1 }],
+    "newline-per-chained-call": ["warn", { "ignoreChainWithDepth": 3 }],
+    "no-bitwise": "warn",
+    "no-continue": "warn",
+    "no-lonely-if": "warn",
+    "no-mixed-operators": ["warn", {
+      "groups": [
+        ["%", "**"],
+        ["%", "+"],
+        ["%", "-"],
+        ["%", "*"],
+        ["%", "/"],
+        ["/", "*"],
+        ["&", "|", "<<", ">>", ">>>"],
+        ["==", "!=", "===", "!=="],
+        ["&&", "||"]
+      ],
+      "allowSamePrecedence": false
+    }],
+    "no-multi-assign": "warn",
+    "no-multiple-empty-lines": "warn",
+    "no-tabs": "warn",
+    "no-trailing-spaces": "warn",
+    "no-whitespace-before-property": "warn",
+    "object-curly-spacing": ["warn", "always"],
+    "object-curly-newline": ["warn", {
+      "ObjectExpression": { "minProperties": 4, "multiline": true, "consistent": true },
+      "ObjectPattern": { "minProperties": 4, "multiline": true, "consistent": true },
+      "ImportDeclaration": { "minProperties": 4, "multiline": true, "consistent": true },
+      "ExportDeclaration": { "minProperties": 4, "multiline": true, "consistent": true }
+    }],
+    "object-property-newline": "warn",
+    "one-var-declaration-per-line": ["warn", "always"],
+    "operator-assignment": "warn",
+    "operator-linebreak": ["warn", "before", { "overrides": { "=": "none" } }],
+    "padded-blocks": ["warn", "never"],
+    "prefer-object-spread": "warn",
+    "quote-props": ["warn", "as-needed"],
+    "quotes": ["warn", "single", { "avoidEscape": true }],
+    "semi": "warn",
+    "semi-spacing": "warn",
+    "semi-style": "warn",
+    "space-before-blocks": "warn",
+    "space-before-function-paren": ["warn", {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
+    "space-in-parens": ["warn", "never"],
+    "space-infix-ops": "warn",
+    "spaced-comment": ["warn", "always"],
+
+    // ES6 rules
+    "arrow-body-style": "warn",
+    "arrow-spacing": "warn",
+    "generator-star-spacing": "warn",
+    "no-confusing-arrow": "warn",
+    "no-useless-computed-key": "warn",
+    "no-var": "warn",
+    "object-shorthand": ["warn", "always", {
+      "ignoreConstructors": false,
+      "avoidQuotes": true
+    }],
+    "prefer-arrow-callback": "warn",
+    "prefer-const": "warn",
+    "prefer-destructuring": "warn",
+    "prefer-rest-params": "warn",
+    "prefer-spread": "warn",
+    "prefer-template": "warn",
+    "require-await": "warn",
+    "require-yield": "warn",
+    "rest-spread-spacing": "warn",
+    "template-curly-spacing": "warn",
+
+    // Import rules from https://github.com/import-js/eslint-plugin-import/tree/main/docs/rules
+    "import/order": ["warn", {
+      "alphabetize": { "order": "asc" },
+      "groups": [ "builtin", "external", "internal", "parent", "sibling" ],
+      "newlines-between": "always"
+    }],
+    "import/newline-after-import": ["warn", { "count": 2 }],
+
+    // React rules
+    "jsx-quotes": ["warn", "prefer-double"],
+    "react/jsx-boolean-value": ["warn", "never"],
+    "react/jsx-closing-bracket-location": ["warn", "line-aligned"],
+    "react/jsx-closing-tag-location": "warn",
+    "react/jsx-curly-spacing": ["warn", "never", {
+      "allowMultiline": true
+    }],
+    "react/jsx-indent-props": ["warn", 4],
+    "react/jsx-max-props-per-line": ["warn", {
+      "maximum": 1
+    }],
+    "react/jsx-pascal-case": "warn",
+    "react/jsx-uses-vars": "warn",
+    "react/no-danger": "warn",
+    "react/no-deprecated": "warn",
+    "react/no-multi-comp": "off",
+    "react/no-string-refs": "warn",
+    "react/no-unknown-property": "warn",
+    "react/prefer-stateless-function": "warn",
+    "react/self-closing-comp": "warn",
+    "react/jsx-wrap-multilines": ["warn", {
+      "declaration": "parens-new-line",
+      "assignment": "parens-new-line",
+      "return": "parens-new-line",
+      "arrow": "parens-new-line",
+      "condition": "parens-new-line",
+      "logical": "parens-new-line",
+      "prop": "parens-new-line"
+    }],
+    "react/jsx-first-prop-new-line": ["warn", "multiline"],
+    "react/jsx-equals-spacing": ["warn", "never"],
+    "react/jsx-indent": ["warn", 4],
+    "react/jsx-no-comment-textnodes": "warn",
+    "react/no-find-dom-node": "warn",
+    "react/jsx-tag-spacing": ["warn", {
+      "closingSlash": "never",
+      "beforeSelfClosing": "always",
+      "afterOpening": "never",
+      "beforeClosing": "never"
+    }],
+    "react/no-array-index-key": "warn",
+    "react/void-dom-elements-no-children": "warn",
+    "react/jsx-curly-brace-presence": ["warn", {
+      "props": "never",
+      "children": "never"
+    }],
+    "react/jsx-child-element-spacing": "warn",
+    "react/no-this-in-sfc": "warn",
+    "react/jsx-max-depth": "off",
+    "react/jsx-props-no-multi-spaces": "warn",
+    "react/no-unsafe": "warn",
+    "react/jsx-fragments": ["warn", "syntax"],
+    "react/jsx-curly-newline": ["warn", {
+      "multiline": "consistent",
+      "singleline": "consistent"
+    }],
+    "react/jsx-no-useless-fragment": "warn",
+    "react/function-component-definition": ["warn", {
+      "namedComponents": "function-declaration",
+      "unnamedComponents": "function-expression"
+    }],
+    "react/jsx-newline": "warn",
+    "react/no-unstable-nested-components": "warn"
+  }
+}

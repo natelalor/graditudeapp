@@ -1,38 +1,40 @@
-import * as AWS from 'aws-sdk'
+import * as AWS from 'aws-sdk';
+
+
 const configuration = {
     region: 'us-east-2',
     secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
     accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID
-}
+};
 
 AWS.config.update(configuration);
-const docClient = new AWS.DynamoDB.DocumentClient()
+const docClient = new AWS.DynamoDB.DocumentClient();
 
 export const fetchData = (tableName: any) => {
-    var params = {
+    const params = {
         TableName: tableName
-    }
+    };
 
-    docClient.scan(params, function (err, data) {
+    docClient.scan(params, (err, data) => {
         if (!err) {
-            console.log(data)
+            console.log(data);
         } else {
             console.log(err);
         }
-    })
-}
+    });
+};
 
-export const putData = async (tableName: any , data: any) => {
-    var params = {
+export const putData = (tableName: any, data: any) => {
+    const params = {
         TableName: tableName,
         Item: data
-    }
-    
-    docClient.put(params, function (err, data) {
+    };
+
+    docClient.put(params, (err, data) => {
         if (err) {
-            console.log('Error', err)
+            console.log('Error', err);
         } else {
-            console.log('Success', data)
+            console.log('Success', data);
         }
-    })
-}
+    });
+};
