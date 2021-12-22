@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Hat } from './Hat';
+import { Bomba, Hat } from './Hat';
 
 function App() {
   return (
@@ -14,6 +14,8 @@ function App() {
         </p>
 
         <Hat thread="cotton" size="medium" defaultQ={67}/>
+
+        <Bomba />
 
         <a
           className="App-link"
