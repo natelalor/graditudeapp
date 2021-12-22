@@ -1,6 +1,6 @@
 import { HTMLAttributes, ReactNode, useState } from 'react';
 
-import classes from './Star.module.scss';
+import styles from './Star.module.scss';
 
 
 export interface StarProps extends HTMLAttributes<HTMLDivElement> {
@@ -21,7 +21,7 @@ export function Star({
 
     return (
         <div
-            className={classes.root}
+            className={styles.root}
             onClick={handleClick}
             style={{
                 background: `rgba(255, 255, 255, ${lumens})`,

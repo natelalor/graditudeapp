@@ -1,42 +1,28 @@
-import classes from './App.module.scss';
-import { Star } from './components/Star';
-import { fetchData, putData } from './database/db';
+import { Route, Switch } from 'react-router-dom';
+
+import { LandingPage } from './views/LandingPage/LandingPage';
+import { LoginPage } from './views/LoginPage/LoginPage';
 
 
-function App() {
-    const fetchDataFormDynamoDb = () => {
-        fetchData('Users');
-    };
-
-    const addDataToDynamoDB = async () => {
-        const userData = {
-            id: `${Math.random()}`
-        };
-
-        await putData('Users', userData);
-    };
-
+export default function App() {
     return (
-        <div className="App">
-            <header className={classes.root}>
-                <Star diameter={500} />
+        <Switch>
+            <Route
+                exact
+                path="/"
+                component={LandingPage}
+            />
 
-                <Star
-                    diameter={100}
-                    onClick={() => fetchDataFormDynamoDb()}
-                >
-                    Fetch
-                </Star>
+            <Route
+                exact
+                path="/login"
+                component={LoginPage}
+            />
 
-                <Star
-                    diameter={30}
-                    onClick={() => addDataToDynamoDB()}
-                >
-                    Put
-                </Star>
-            </header>
-        </div>
+            {/* <Route
+                path="*"
+                component={AuthenticatedRouteSwitch}
+            /> */}
+        </Switch>
     );
 }
-
-export default App;
