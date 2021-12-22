@@ -5,9 +5,9 @@ import { BrowserRouter } from 'react-router-dom';
 
 import './index.scss';
 import App from './App';
+import Auth0ProviderWithHistory from './auth/Auth0ProviderWithHistory';
 import reportWebVitals from './reportWebVitals';
 
-// STARTS HERE
 
 const configuration: ConfigurationOptions = {
     region: 'us-east-2',
@@ -16,11 +16,13 @@ const configuration: ConfigurationOptions = {
 };
 
 AWS.config.update(configuration);
-// ENDS HERE
+
 ReactDOM.render(
     <React.StrictMode>
         <BrowserRouter>
-            <App />
+            <Auth0ProviderWithHistory>
+                <App />
+            </Auth0ProviderWithHistory>
         </BrowserRouter>
     </React.StrictMode>,
     document.getElementById('root')
