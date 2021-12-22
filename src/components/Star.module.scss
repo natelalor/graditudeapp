@@ -1,0 +1,18 @@
+@use 'src/scss/utils';
+
+.root {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 50%;
+    padding-top: 100%;
+    padding: utils.spacing(6);
+    color: black;
+    box-shadow: rgba(255, 255, 255, 1) 0px 1px 1px 0px inset, rgba(255, 255, 255, 1) 0px 50px 100px -20px, rgba(255, 255, 255, 1) 0px 30px 60px -30px;
+    transition: ease-out 50ms;
+}
+
+.root:hover {
+    box-shadow: rgba(255, 255, 255, 1) 0px 10px 10px 0px inset, rgba(255, 255, 255, 1) 0px 60px 110px -10px, rgba(255, 255, 255, 1) 0px 40px 70px -20px;
+}

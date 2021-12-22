@@ -1,9 +1,7 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { fetchData, putData } from './db';
+import classes from './App.module.scss';
+import { fetchData, putData } from './database/db';
 
-import { Bomba, Hat } from './Hat';
+import { Star } from './components/Star';
 
 function App() {
 
@@ -21,29 +19,12 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+      <header className={classes.root}>
+        <Star diameter={500}/>
 
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
+        <Star diameter={100} onClick={() => fetchDataFormDynamoDb()}> Fetch </Star>
 
-        <Hat thread="cotton" size="medium" defaultQ={67}/>
-
-        <Bomba />
-
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-
-        <button onClick={() => fetchDataFormDynamoDb()}> Fetch </button>
-
-        <button onClick={() => addDataToDynamoDB()}> Put </button>
+        <Star diameter={30} onClick={() => addDataToDynamoDB()}> Put </Star>
       </header>
     </div>
   );

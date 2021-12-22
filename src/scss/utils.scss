@@ -1,0 +1,35 @@
+/*
+ * Util function to compute spacing based on an 8px gutter, which matches
+ * material-ui. Arguments should be numbers. This function accepts up to
+ * 4 arguments and follows CSS shorthand for multiple margin/padding values.
+ *
+ * Usage:
+ * @use 'src/scss/utils';
+ *
+ * .someRule {
+ *   margin: utils.spacing(1, 2);
+ *   padding: utils.spacing(1);
+ * }
+ *
+ * results:
+ * .someRule {
+ *   margin: 8px 16px;
+ *   padding: 8px;
+ * }
+ */
+ $spacing-base: 8px;
+ @function spacing($arg1, $arg2: null, $arg3: null, $arg4: null) {
+    @if $arg2 == null and $arg3 == null and $arg4 == null {
+        @return $spacing-base * $arg1;
+    }
+
+    @if $arg3 == null and $arg4 == null {
+        @return $spacing-base * $arg1 $spacing-base * $arg2;
+    }
+
+    @if $arg4 == null {
+        @return $spacing-base * $arg1 $spacing-base * $arg2 $spacing-base * $arg3;
+    }
+
+    @return $spacing-base * $arg1 $spacing-base * $arg2 $spacing-base * $arg3 $spacing-base * $arg4;
+}
