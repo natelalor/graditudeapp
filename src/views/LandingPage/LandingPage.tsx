@@ -1,19 +1,22 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { Button, InputAdornment, TextField as MuiTextField } from '@material-ui/core';
-import { ExpandMore, Search } from '@material-ui/icons';
-import { useCallback, useEffect, useState } from 'react';
 import {
-    useForm, FormProvider
+    Button, IconButton, InputAdornment, TextField as MuiTextField, Tooltip
+} from '@material-ui/core';
+import {
+    AddCircleOutline, ExpandMore, RemoveCircleOutline, Search
+} from '@material-ui/icons';
+import { useState } from 'react';
+import {
+    useForm, FormProvider, useFieldArray
 } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
 import apiUtils from '../../api/ApiUtils';
 import { TextField } from '../../components/form/TextField';
-import { fetchData, Gratitude, putData } from '../../database/db';
+import { fetchData, putData, query } from '../../database/db';
 
 import styles from './LandingPage.module.scss';
 import { NavButtonGroup, SideNav } from './components/SideNav';
-import useAsyncEffect from '../../utils/useAsyncEffect';
 
 
 const navButtonGroups: NavButtonGroup[] = [
@@ -59,23 +62,36 @@ const navButtonGroups: NavButtonGroup[] = [
     }
 ];
 
-type GratitudeFormValues = Omit<Gratitude, 'id'>;
+// type GratitudeFormValues = Omit<Gratitude, 'id'>;
 
+interface GratitudeFormValues {
+    userIds: {value: string}[];
+    from: string;
+    body: string;
+}
 
 export function LandingPage() {
     const formMethods = useForm<GratitudeFormValues>();
 
-    const { isAuthenticated, loginWithRedirect, user, getAccessTokenSilently } = useAuth0();
+    const { fields, append, remove } = useFieldArray<GratitudeFormValues>({
+        name: 'userIds',
+        control: formMethods.control
+    });
 
-    console.log(user);
+    const { isAuthenticated, loginWithRedirect, user } = useAuth0();
+
     if (user?.['http://localhost:3000/user_metadata']?.isNew) {
         putData('Users', {
             ...user,
+            lowercaseName: user.name?.toLowerCase(),
+            lowercaseEmail: user.email?.toLowerCase(),
             id: user?.['http://localhost:3000/user_id'] || uuidv4()
         });
     }
 
     const [ users, setUsers ] = useState<any>();
+
+    console.log(users);
 
     const handleSubmit = formMethods.handleSubmit(async formValues => {
         console.log(formValues);
@@ -89,20 +105,6 @@ export function LandingPage() {
 
     // useAsyncEffect(useCallback(async () => {
     //     users && console.log(users);
-
-    //     const token = await getAccessTokenSilently();
-
-    //     const res = await fetch('https://dev-eks3f9sr.us.auth0.com/userinfo', {
-    //         method: 'GET',
-    //         headers: {
-    //             Authorization: 'Bearer ' + (await getAccessTokenSilently())
-    //         }
-    //     });
-
-    //     // console.log(res.body.json());
-    //     console.log(res.json());
-
-    //     setUserInfo(res);
     // }, [ users ]));
 
     return (
@@ -135,12 +137,70 @@ export function LandingPage() {
                         onSubmit={handleSubmit}
                     >
                         <FormProvider {...formMethods}>
-                            <TextField<GratitudeFormValues>
-                                name="to"
-                                label="To"
-                                required
-                                hideRequiredIndicator
-                            />
+                            <div className={styles.dbaContainer}>
+                                {fields.map((field, index) => (
+                                    <div
+                                        className={styles.dbaRow}
+                                        key={field.id}
+                                    >
+                                        {/* <TextField
+                                            name={`dbaNames.${index}.value`}
+                                            label="User"
+                                            size="small"
+                                            required
+                                            hideRequiredIndicator
+                                        /> */}
+
+                                        <MuiTextField
+                                            onChange={async (event) => {
+                                                // event.target.value
+                                                const res = await query('Users', event.target.value);
+                                                console.log(res);
+                                                setUsers(setUsers(res));
+                                            }}
+                                        />
+
+                                        <div className={styles.dbaButtons}>
+                                            {fields.length > 1 && (
+                                                <Tooltip title="Remove tag">
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            remove(index);
+                                                        }}
+                                                    >
+                                                        <RemoveCircleOutline color="error" />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            )}
+
+                                            {index === fields.length - 1 && (
+                                                <Tooltip title="Tag additional user">
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            append({ value: '' });
+                                                        }}
+                                                    >
+                                                        <AddCircleOutline color="secondary" />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {fields.length === 0 && (
+                                    <Tooltip title="Tag a user">
+                                        <IconButton
+                                            onClick={() => {
+                                                append({ value: '' });
+                                            }}
+                                        >
+                                            <AddCircleOutline color="secondary" />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                            </div>
+
 
                             <TextField<GratitudeFormValues>
                                 name="body"
@@ -172,9 +232,11 @@ export function LandingPage() {
                     </p>
                 )}
 
-                <Button onClick={async () => {
-                    console.log(await fetchData('Users'));
-                }}>
+                <Button
+                    onClick={async () => {
+                        console.log(await fetchData('Users'));
+                    }}
+                >
                     Fetch data
                 </Button>
             </div>

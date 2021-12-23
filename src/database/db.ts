@@ -11,6 +11,8 @@ AWS.config.update(configuration);
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
+const dynamodb = new AWS.DynamoDB();
+
 export const fetchData = (tableName: any) => {
     const params = {
         TableName: tableName
@@ -64,13 +66,40 @@ export const putData = (tableName: any, data: any) => {
     });
 };
 
+export interface User {
+    id: string;
+    email: string;
+    email_verified: boolean; // eslint-disable-line
+    family_name: string; // eslint-disable-line
+    given_name: string; // eslint-disable-line
+    ['http://localhost:3000/user_id']: string;
+    ['http://localhost:3000/user_metadata']: { isNew: boolean };
+    locale: string;
+    name: string;
+    nickname: string;
+    picture: string;
+    sub: string;
+    updated_at: string; // eslint-disable-line
+}
+
 export interface Gratitude {
     id: string;
-    to: string;
+    userIds: string[];
     from: string;
     body: string;
 }
 
 export const putGratitude = (gratitude: Gratitude) => {
     putData('Gratitude', gratitude);
+};
+
+export const query = async (tableName: string, searchTerm: string) => {
+    const params = {
+        Statement: `SELECT * FROM ${tableName} WHERE contains("lowercaseName", '${searchTerm}') OR contains("lowercaseEmail", '${searchTerm}')`,
+        ConsistentRead: true || false
+    };
+
+    console.log(params);
+
+    return await dynamodb.executeStatement(params).promise();
 };
