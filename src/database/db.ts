@@ -24,6 +24,30 @@ export const fetchData = (tableName: any) => {
     });
 };
 
+export const fetchGratitude = (user: any) => {
+    const params = {
+        TableName: 'Gratitude',
+        KeyConditionExpression: '#from = :email',
+        ExpressionAttributeNames: {
+            '#from': 'from'
+        },
+        ExpressionAttributeValues: {
+            ':email': user.email
+        }
+    };
+
+    docClient.query(params, (err, data) => {
+        if (err) {
+            console.log('Unable to query. Error:', JSON.stringify(err, null, 2));
+        } else {
+            console.log('Query succeeded.');
+            data.Items?.forEach((item) => {
+                console.log(item);
+            });
+        }
+    });
+};
+
 export const putData = (tableName: any, data: any) => {
     const params = {
         TableName: tableName,
@@ -37,4 +61,15 @@ export const putData = (tableName: any, data: any) => {
             console.log('Success', data);
         }
     });
+};
+
+export interface Gratitude {
+    id: string;
+    to: string;
+    from: string;
+    body: string;
+}
+
+export const putGratitude = (gratitude: Gratitude) => {
+    putData('Gratitude', gratitude);
 };

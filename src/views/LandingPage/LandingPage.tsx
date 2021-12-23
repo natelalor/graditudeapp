@@ -1,11 +1,17 @@
-import { InputAdornment, TextField } from '@material-ui/core';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Button, InputAdornment, TextField as MuiTextField } from '@material-ui/core';
 import { ExpandMore, Search } from '@material-ui/icons';
+import {
+    useForm, FormProvider
+} from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
 
-import { fetchData, putData } from '../../database/db';
+// import { fetchData, Gratitude, putData } from '../../database/db';
+import { TextField } from '../../components/form/TextField';
+import { Gratitude } from '../../database/db';
 
 import styles from './LandingPage.module.scss';
 import { NavButtonGroup, SideNav } from './components/SideNav';
-import { Star } from './components/Star';
 
 
 const navButtonGroups: NavButtonGroup[] = [
@@ -51,19 +57,30 @@ const navButtonGroups: NavButtonGroup[] = [
     }
 ];
 
+type GratitudeFormValues = Omit<Gratitude, 'id'>;
+
 
 export function LandingPage() {
-    const fetchDataFormDynamoDb = () => {
-        fetchData('Users');
-    };
+    const formMethods = useForm<GratitudeFormValues>();
 
-    const addDataToDynamoDB = async () => {
-        const userData = {
-            id: `${Math.random()}`
-        };
+    const { isAuthenticated, loginWithRedirect } = useAuth0();
 
-        await putData('Users', userData);
-    };
+    // const fetchDataFormDynamoDb = () => {
+    //     fetchData('Users');
+    // };
+
+    // const addDataToDynamoDB = async () => {
+    //     const userData = {
+    //         id: `${Math.random()}`
+    //     };
+
+    //     await putData('Users', userData);
+    // };
+
+    const handleSubmit = formMethods.handleSubmit(formValues => {
+        console.log(formValues);
+        uuidv4();
+    });
 
     return (
         <div className={styles.root}>
@@ -71,7 +88,7 @@ export function LandingPage() {
 
             <div className={styles.content}>
                 <div className={styles.topNav}>
-                    <TextField
+                    <MuiTextField
                         variant="standard"
                         placeholder="Search"
                         helperText="Who are you grateful for?"
@@ -89,21 +106,49 @@ export function LandingPage() {
                     />
                 </div>
 
-                <Star diameter={500} />
+                {isAuthenticated ? (
+                    <form
+                        id="gratitude-form"
+                        onSubmit={handleSubmit}
+                    >
+                        <FormProvider {...formMethods}>
+                            <TextField<GratitudeFormValues>
+                                name="to"
+                                label="To"
+                                required
+                                hideRequiredIndicator
+                            />
 
-                <Star
-                    diameter={100}
-                    onClick={() => fetchDataFormDynamoDb()}
-                >
-                    Fetch
-                </Star>
+                            <TextField<GratitudeFormValues>
+                                name="body"
+                                label="Body"
+                                required
+                                hideRequiredIndicator
+                            />
+                        </FormProvider>
+                    </form>
+                ) : (
+                    <p>
+                        please
 
-                <Star
-                    diameter={30}
-                    onClick={() => addDataToDynamoDB()}
+                        <Button
+                            onClick={() => loginWithRedirect()}
+                            variant="outlined"
+                        >
+                            login
+                        </Button>
+
+                        to write a thank you.
+                    </p>
+                )}
+
+                <Button
+                    form="gratitude-form"
+                    variant="contained"
+                    type="submit"
                 >
-                    Put
-                </Star>
+                    Save
+                </Button>
             </div>
         </div>
     );
