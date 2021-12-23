@@ -5,11 +5,31 @@
     flex-direction: column;
 }
 
+.root {
+    align-items: center;
+    gap: utils.spacing(4);
+    border-right: solid gray 1px;
+    background: rgb(238, 238, 238);
+}
+
 .logo {
     height: 200px;
+    width: 200px;
     border: solid gray 1px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: utils.spacing(4);
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-left: utils.spacing(4);
+}
+
+.buttons {
+    align-items: baseline;
 }

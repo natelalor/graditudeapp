@@ -1,3 +1,5 @@
+import { ThemeProvider } from '@emotion/react';
+import { StyledEngineProvider, CssBaseline } from '@material-ui/core';
 import AWS, { ConfigurationOptions } from 'aws-sdk';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -6,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.scss';
 import App from './App';
 import Auth0ProviderWithHistory from './auth/Auth0ProviderWithHistory';
+import { theme } from './config/mui-theme';
 import reportWebVitals from './reportWebVitals';
 
 
@@ -19,11 +22,17 @@ AWS.config.update(configuration);
 
 ReactDOM.render(
     <React.StrictMode>
-        <BrowserRouter>
-            <Auth0ProviderWithHistory>
-                <App />
-            </Auth0ProviderWithHistory>
-        </BrowserRouter>
+        <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme}>
+                <BrowserRouter>
+                    <Auth0ProviderWithHistory>
+                        <CssBaseline />
+
+                        <App />
+                    </Auth0ProviderWithHistory>
+                </BrowserRouter>
+            </ThemeProvider>
+        </StyledEngineProvider>
     </React.StrictMode>,
     document.getElementById('root')
 );

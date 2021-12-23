@@ -1,4 +1,5 @@
 import { Button, Typography } from '@material-ui/core';
+import clsx from 'clsx';
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -22,20 +23,23 @@ export interface SideNavProps {
 
 export function SideNav({ navButtonGroups }: SideNavProps) {
     return (
-        <div className={styles.flex}>
+        <div className={clsx(styles.root, styles.flex)}>
             <img
                 className={styles.logo}
-                src="/public/logo.png"
+                src="logo.png"
                 alt="alt"
             />
 
             {navButtonGroups.map(navButtonGroup => (
-                <div key={navButtonGroup.title}>
-                    <Typography component="h4">
+                <div
+                    key={navButtonGroup.title}
+                    className={styles.group}
+                >
+                    <Typography variant="h5">
                         {navButtonGroup.title}
                     </Typography>
 
-                    <div className={styles.flex}>
+                    <div className={clsx(styles.flex, styles.buttons)}>
                         {navButtonGroup.navButtons.map(navButton => {
                             const { icon: Icon, name, to } = navButton;
 

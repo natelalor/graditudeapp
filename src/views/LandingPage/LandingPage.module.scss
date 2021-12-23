@@ -3,16 +3,36 @@
 .root {
   display: grid;
   grid-template-columns: .25fr auto;
+  min-height: 100vh;
 }
 
 .content {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  gap: utils.spacing(4);
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  // min-height: 100vh;
+  // display: flex;
+  // gap: utils.spacing(4);
+  // flex-direction: column;
+  // align-items: center;
+  // justify-content: center;
+  // font-size: calc(10px + 2vmin);
+  // color: white;
+  width: 100%;
+}
+
+.topNav {
+  // border-bottom: solid gray 1px;
+  padding: utils.spacing(2);
+}
+
+.searchHelperText {
+  position: absolute;
+  bottom: -21px;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms ease;
+
+  &:global(.Mui-focused) {
+    opacity: 1;
+    visibility: visible;
+  }
 }
