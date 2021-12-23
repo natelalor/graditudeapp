@@ -36,3 +36,9 @@
     visibility: visible;
   }
 }
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: utils.spacing(2);
+}

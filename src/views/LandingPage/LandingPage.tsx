@@ -1,12 +1,13 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { Button, InputAdornment, TextField as MuiTextField } from '@material-ui/core';
 import { ExpandMore, Search } from '@material-ui/icons';
+import { useState } from 'react';
 import {
     useForm, FormProvider
 } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
-// import { fetchData, Gratitude, putData } from '../../database/db';
+import apiUtils from '../../api/ApiUtils';
 import { TextField } from '../../components/form/TextField';
 import { Gratitude } from '../../database/db';
 
@@ -65,6 +66,8 @@ export function LandingPage() {
 
     const { isAuthenticated, loginWithRedirect } = useAuth0();
 
+    const [ users, setUsers ] = useState<any>();
+
     // const fetchDataFormDynamoDb = () => {
     //     fetchData('Users');
     // };
@@ -77,9 +80,43 @@ export function LandingPage() {
     //     await putData('Users', userData);
     // };
 
-    const handleSubmit = formMethods.handleSubmit(formValues => {
+    const handleSubmit = formMethods.handleSubmit(async formValues => {
         console.log(formValues);
         uuidv4();
+
+        try {
+            // const res = await fetch("https://dev-eks3f9sr.us.auth0.com/oauth/token", {
+            //     "method": "POST",
+            //     "headers": {
+            //       "Content-Type": "application/json"
+            //     },
+            //     body: JSON.stringify({
+            //         grant_type: 'client_credentials',
+            //         client_id:"xQ2OLdoTEGL93sJBNGVbPJfY9vd4fqJg",client_secret:"1gPjfw_ljl-v4CHTAV1TZJRgW4p5INogFn6YePQqJ8Lb78ae7RG8N2sFDR1aKfMB",audience:"https://dev-eks3f9sr.us.auth0.com/api/v2/"
+            //     })
+            // });
+
+            // console.log(res);
+
+            // const json = await res.json();
+
+            // // const token = await getAccessTokenSilently();
+            // const token = json.access_token;
+            // console.log(token);
+            // console.log(json);
+
+            // const users = await fetch("https://dev-eks3f9sr.us.auth0.com/api/v2/users", {
+            //     "method": "GET",
+            //     "headers": {
+            //         "Authorization": "Bearer " + token
+            //     }
+            // });
+
+            setUsers(await apiUtils.get('/users'));
+            console.log(users);
+        } catch (e) {
+            console.log(e);
+        }
     });
 
     return (
@@ -108,7 +145,7 @@ export function LandingPage() {
 
                 {isAuthenticated ? (
                     <form
-                        id="gratitude-form"
+                        className={styles.form}
                         onSubmit={handleSubmit}
                     >
                         <FormProvider {...formMethods}>
@@ -126,6 +163,13 @@ export function LandingPage() {
                                 hideRequiredIndicator
                             />
                         </FormProvider>
+
+                        <Button
+                            variant="contained"
+                            type="submit"
+                        >
+                            Save
+                        </Button>
                     </form>
                 ) : (
                     <p>
@@ -141,14 +185,6 @@ export function LandingPage() {
                         to write a thank you.
                     </p>
                 )}
-
-                <Button
-                    form="gratitude-form"
-                    variant="contained"
-                    type="submit"
-                >
-                    Save
-                </Button>
             </div>
         </div>
     );
