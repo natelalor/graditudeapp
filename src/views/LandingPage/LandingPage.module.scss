@@ -1,6 +1,11 @@
 @use 'src/scss/utils';
 
 .root {
+  display: grid;
+  grid-template-columns: .25fr auto;
+}
+
+.content {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;

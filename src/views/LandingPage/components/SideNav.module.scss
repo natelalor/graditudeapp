@@ -1,0 +1,15 @@
+@use 'src/scss/utils';
+
+.flex {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    height: 200px;
+    border: solid gray 1px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
