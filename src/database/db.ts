@@ -8,6 +8,7 @@ const configuration = {
 };
 
 AWS.config.update(configuration);
+
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 export const fetchData = (tableName: any) => {

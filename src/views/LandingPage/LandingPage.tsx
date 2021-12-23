@@ -1,7 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { Button, InputAdornment, TextField as MuiTextField } from '@material-ui/core';
 import { ExpandMore, Search } from '@material-ui/icons';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
     useForm, FormProvider
 } from 'react-hook-form';
@@ -9,10 +9,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 import apiUtils from '../../api/ApiUtils';
 import { TextField } from '../../components/form/TextField';
-import { Gratitude } from '../../database/db';
+import { fetchData, Gratitude, putData } from '../../database/db';
 
 import styles from './LandingPage.module.scss';
 import { NavButtonGroup, SideNav } from './components/SideNav';
+import useAsyncEffect from '../../utils/useAsyncEffect';
 
 
 const navButtonGroups: NavButtonGroup[] = [
@@ -64,60 +65,45 @@ type GratitudeFormValues = Omit<Gratitude, 'id'>;
 export function LandingPage() {
     const formMethods = useForm<GratitudeFormValues>();
 
-    const { isAuthenticated, loginWithRedirect } = useAuth0();
+    const { isAuthenticated, loginWithRedirect, user, getAccessTokenSilently } = useAuth0();
+
+    console.log(user);
+    if (user?.['http://localhost:3000/user_metadata']?.isNew) {
+        putData('Users', {
+            ...user,
+            id: user?.['http://localhost:3000/user_id'] || uuidv4()
+        });
+    }
 
     const [ users, setUsers ] = useState<any>();
 
-    // const fetchDataFormDynamoDb = () => {
-    //     fetchData('Users');
-    // };
-
-    // const addDataToDynamoDB = async () => {
-    //     const userData = {
-    //         id: `${Math.random()}`
-    //     };
-
-    //     await putData('Users', userData);
-    // };
-
     const handleSubmit = formMethods.handleSubmit(async formValues => {
         console.log(formValues);
-        uuidv4();
 
         try {
-            // const res = await fetch("https://dev-eks3f9sr.us.auth0.com/oauth/token", {
-            //     "method": "POST",
-            //     "headers": {
-            //       "Content-Type": "application/json"
-            //     },
-            //     body: JSON.stringify({
-            //         grant_type: 'client_credentials',
-            //         client_id:"xQ2OLdoTEGL93sJBNGVbPJfY9vd4fqJg",client_secret:"1gPjfw_ljl-v4CHTAV1TZJRgW4p5INogFn6YePQqJ8Lb78ae7RG8N2sFDR1aKfMB",audience:"https://dev-eks3f9sr.us.auth0.com/api/v2/"
-            //     })
-            // });
-
-            // console.log(res);
-
-            // const json = await res.json();
-
-            // // const token = await getAccessTokenSilently();
-            // const token = json.access_token;
-            // console.log(token);
-            // console.log(json);
-
-            // const users = await fetch("https://dev-eks3f9sr.us.auth0.com/api/v2/users", {
-            //     "method": "GET",
-            //     "headers": {
-            //         "Authorization": "Bearer " + token
-            //     }
-            // });
-
             setUsers(await apiUtils.get('/users'));
-            console.log(users);
         } catch (e) {
             console.log(e);
         }
     });
+
+    // useAsyncEffect(useCallback(async () => {
+    //     users && console.log(users);
+
+    //     const token = await getAccessTokenSilently();
+
+    //     const res = await fetch('https://dev-eks3f9sr.us.auth0.com/userinfo', {
+    //         method: 'GET',
+    //         headers: {
+    //             Authorization: 'Bearer ' + (await getAccessTokenSilently())
+    //         }
+    //     });
+
+    //     // console.log(res.body.json());
+    //     console.log(res.json());
+
+    //     setUserInfo(res);
+    // }, [ users ]));
 
     return (
         <div className={styles.root}>
@@ -185,6 +171,12 @@ export function LandingPage() {
                         to write a thank you.
                     </p>
                 )}
+
+                <Button onClick={async () => {
+                    console.log(await fetchData('Users'));
+                }}>
+                    Fetch data
+                </Button>
             </div>
         </div>
     );
