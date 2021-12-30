@@ -101,5 +101,7 @@ export const query = async (tableName: string, searchTerm: string) => {
 
     console.log(params);
 
-    return await dynamodb.executeStatement(params).promise();
+    const res = await dynamodb.executeStatement(params).promise();
+
+    return res.Items?.map(item => AWS.DynamoDB.Converter.unmarshall(item));
 };

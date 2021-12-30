@@ -3,7 +3,7 @@ import {
     Button, IconButton, InputAdornment, TextField as MuiTextField, Tooltip
 } from '@material-ui/core';
 import {
-    AddCircleOutline, ExpandMore, RemoveCircleOutline, Search
+    ExpandMore, RemoveCircleOutline, Search
 } from '@material-ui/icons';
 import { useState } from 'react';
 import {
@@ -62,12 +62,30 @@ const navButtonGroups: NavButtonGroup[] = [
     }
 ];
 
-// type GratitudeFormValues = Omit<Gratitude, 'id'>;
-
 interface GratitudeFormValues {
-    userIds: {value: string}[];
+    userIds: {value: string, name: string, picture: string}[];
     from: string;
     body: string;
+}
+
+interface User {
+    lowercaseEmail: string;
+    locale: string;
+    given_name: string; // eslint-disable-line
+    family_name: string; // eslint-disable-line
+    'http://localhost:3000/user_id': string;
+    picture: string;
+    email: string;
+    name: string;
+    email_verified: boolean, // eslint-disable-line
+    updated_at: string; // eslint-disable-line
+    'http://localhost:3000/user_metadata': {
+        isNew: boolean;
+    };
+    lowercaseName: string;
+    nickname: string;
+    id: string;
+    sub: string;
 }
 
 export function LandingPage() {
@@ -89,7 +107,9 @@ export function LandingPage() {
         });
     }
 
-    const [ users, setUsers ] = useState<any>();
+    const [ users, setUsers ] = useState<User[]>([]);
+    const [ showUsers, setShowUsers ] = useState(false);
+    const [ searchValue, setSearchValue ] = useState('');
 
     console.log(users);
 
@@ -103,10 +123,6 @@ export function LandingPage() {
         }
     });
 
-    // useAsyncEffect(useCallback(async () => {
-    //     users && console.log(users);
-    // }, [ users ]));
-
     return (
         <div className={styles.root}>
             <SideNav navButtonGroups={navButtonGroups} />
@@ -117,7 +133,15 @@ export function LandingPage() {
                         variant="standard"
                         placeholder="Search"
                         helperText="Who are you grateful for?"
-                        onChange={e => {}}
+                        value={searchValue}
+                        onChange={async (event) => {
+                            setSearchValue(event.target.value);
+                            setUsers(await query('Users', event.target.value) as User[]);
+                        }}
+                        onFocus={() => setShowUsers(true)}
+                        onBlur={() => {
+                            setTimeout(() => setShowUsers(false), 150); // 150ms delay to allow for click. todo fix
+                        }}
                         FormHelperTextProps={{
                             className: styles.searchHelperText
                         }}
@@ -129,6 +153,31 @@ export function LandingPage() {
                             )
                         }}
                     />
+
+                    {showUsers && users.map(user => (
+                        <div
+                            key={user.id}
+                            className={styles.flex}
+                            onClick={() => {
+                                // if (users.filter())
+                                append({
+                                    value: user.id,
+                                    name: user.name,
+                                    picture: user.picture
+                                });
+
+                                setSearchValue('');
+                                setUsers([]);
+                            }}
+                        >
+                            <img
+                                src={user.picture}
+                                alt="usr img"
+                            />
+
+                            {user.name}
+                        </div>
+                    ))}
                 </div>
 
                 {isAuthenticated ? (
@@ -137,42 +186,34 @@ export function LandingPage() {
                         onSubmit={handleSubmit}
                     >
                         <FormProvider {...formMethods}>
-                            <div className={styles.dbaContainer}>
+                            <div className={styles.todo}>
                                 {fields.map((field, index) => (
                                     <div
-                                        className={styles.dbaRow}
+                                        className={styles.todo}
                                         key={field.id}
                                     >
-                                        {/* <TextField
-                                            name={`dbaNames.${index}.value`}
-                                            label="User"
-                                            size="small"
-                                            required
-                                            hideRequiredIndicator
-                                        /> */}
+                                        <div
+                                            className={styles.flex}
+                                        >
+                                            <img
+                                                src={field.picture}
+                                                alt="usr img"
+                                            />
 
-                                        <MuiTextField
-                                            onChange={async (event) => {
-                                                // event.target.value
-                                                const res = await query('Users', event.target.value);
-                                                console.log(res);
-                                                setUsers(setUsers(res));
-                                            }}
-                                        />
+                                            {field.name}
 
-                                        <div className={styles.dbaButtons}>
-                                            {fields.length > 1 && (
-                                                <Tooltip title="Remove tag">
-                                                    <IconButton
-                                                        onClick={() => {
-                                                            remove(index);
-                                                        }}
-                                                    >
-                                                        <RemoveCircleOutline color="error" />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            )}
+                                            <Tooltip title="Remove tag">
+                                                <IconButton
+                                                    onClick={() => {
+                                                        remove(index);
+                                                    }}
+                                                >
+                                                    <RemoveCircleOutline color="error" />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </div>
 
+                                        {/* <div className={styles.todo}>
                                             {index === fields.length - 1 && (
                                                 <Tooltip title="Tag additional user">
                                                     <IconButton
@@ -184,11 +225,11 @@ export function LandingPage() {
                                                     </IconButton>
                                                 </Tooltip>
                                             )}
-                                        </div>
+                                        </div> */}
                                     </div>
                                 ))}
 
-                                {fields.length === 0 && (
+                                {/* {fields.length === 0 && (
                                     <Tooltip title="Tag a user">
                                         <IconButton
                                             onClick={() => {
@@ -198,7 +239,7 @@ export function LandingPage() {
                                             <AddCircleOutline color="secondary" />
                                         </IconButton>
                                     </Tooltip>
-                                )}
+                                )} */}
                             </div>
 
 
