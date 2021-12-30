@@ -60,6 +60,7 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.1.8",
-    "@types/uuid": "^8.3.3"
+    "@types/uuid": "^8.3.3",
+    "react-error-overlay": "6.0.9"
   }
 }

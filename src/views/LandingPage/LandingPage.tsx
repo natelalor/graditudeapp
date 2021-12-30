@@ -1,5 +1,8 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import {
+    Avatar,
+    AvatarGroup,
+    Badge,
     Button, IconButton, InputAdornment, TextField as MuiTextField, Tooltip
 } from '@material-ui/core';
 import {
@@ -153,32 +156,32 @@ export function LandingPage() {
                             )
                         }}
                     />
-
-                    {showUsers && users.map(user => (
-                        <div
-                            key={user.id}
-                            className={styles.flex}
-                            onClick={() => {
-                                // if (users.filter())
-                                append({
-                                    value: user.id,
-                                    name: user.name,
-                                    picture: user.picture
-                                });
-
-                                setSearchValue('');
-                                setUsers([]);
-                            }}
-                        >
-                            <img
-                                src={user.picture}
-                                alt="usr img"
-                            />
-
-                            {user.name}
-                        </div>
-                    ))}
                 </div>
+
+                {showUsers && users.map(user => (
+                    <div
+                        key={user.id}
+                        className={styles.flex}
+                        onClick={() => {
+                            // if (users.filter())
+                            append({
+                                value: user.id,
+                                name: user.name,
+                                picture: user.picture
+                            });
+
+                            setSearchValue('');
+                            setUsers([]);
+                        }}
+                    >
+                        <Avatar
+                            alt={user.name}
+                            src={user.picture}
+                        />
+
+                        {user.name}
+                    </div>
+                ))}
 
                 {isAuthenticated ? (
                     <form
@@ -187,59 +190,40 @@ export function LandingPage() {
                     >
                         <FormProvider {...formMethods}>
                             <div className={styles.todo}>
-                                {fields.map((field, index) => (
-                                    <div
-                                        className={styles.todo}
-                                        key={field.id}
-                                    >
-                                        <div
-                                            className={styles.flex}
-                                        >
-                                            <img
-                                                src={field.picture}
-                                                alt="usr img"
-                                            />
-
-                                            {field.name}
-
-                                            <Tooltip title="Remove tag">
-                                                <IconButton
-                                                    onClick={() => {
-                                                        remove(index);
-                                                    }}
-                                                >
-                                                    <RemoveCircleOutline color="error" />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </div>
-
-                                        {/* <div className={styles.todo}>
-                                            {index === fields.length - 1 && (
-                                                <Tooltip title="Tag additional user">
-                                                    <IconButton
-                                                        onClick={() => {
-                                                            append({ value: '' });
-                                                        }}
-                                                    >
-                                                        <AddCircleOutline color="secondary" />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            )}
-                                        </div> */}
-                                    </div>
-                                ))}
-
-                                {/* {fields.length === 0 && (
-                                    <Tooltip title="Tag a user">
-                                        <IconButton
-                                            onClick={() => {
-                                                append({ value: '' });
-                                            }}
-                                        >
-                                            <AddCircleOutline color="secondary" />
-                                        </IconButton>
-                                    </Tooltip>
-                                )} */}
+                                <AvatarGroup
+                                    max={4}
+                                    className={styles.avatars}
+                                >
+                                    {fields.map((field, index) => (
+                                        <Tooltip title={field.name}>
+                                            <Badge
+                                                overlap="circular"
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right'
+                                                }}
+                                                badgeContent={(
+                                                    <div className={styles.delButton}>
+                                                        <IconButton
+                                                            onClick={() => {
+                                                                remove(index);
+                                                            }}
+                                                            size="small"
+                                                        >
+                                                            <RemoveCircleOutline color="error" />
+                                                        </IconButton>
+                                                    </div>
+                                                )}
+                                            >
+                                                <Avatar
+                                                    alt={field.name}
+                                                    src={field.picture}
+                                                    className={styles.avatar}
+                                                />
+                                            </Badge>
+                                        </Tooltip>
+                                    ))}
+                                </AvatarGroup>
                             </div>
 
 
