@@ -3,10 +3,10 @@ import {
     Avatar,
     AvatarGroup,
     Badge,
-    Button, IconButton, InputAdornment, TextField as MuiTextField, Tooltip
+    Button, Chip, IconButton, InputAdornment, TextField as MuiTextField, Tooltip
 } from '@material-ui/core';
 import {
-    ExpandMore, RemoveCircleOutline, Search
+    ExpandMore, RemoveCircleOutline, Search, BungalowOutlined, FaceOutlined, VolunteerActivismOutlined
 } from '@material-ui/icons';
 import { useState } from 'react';
 import {
@@ -22,51 +22,11 @@ import styles from './LandingPage.module.scss';
 import { NavButtonGroup, SideNav } from './components/SideNav';
 
 
-const navButtonGroups: NavButtonGroup[] = [
-    {
-        title: 'Actions',
-        navButtons: [
-            {
-                name: 'Login',
-                to: '/login',
-                icon: ExpandMore
-            },
-            {
-                name: 'My account',
-                to: '/account',
-                icon: ExpandMore
-            },
-            {
-                name: 'Feed',
-                to: '/feed',
-                icon: ExpandMore
-            }
-        ]
-    },
-    {
-        title: 'Links',
-        navButtons: [
-            {
-                name: 'Research',
-                to: '/research',
-                icon: ExpandMore
-            },
-            {
-                name: 'More info',
-                to: '/info',
-                icon: ExpandMore
-            },
-            {
-                name: 'Contact',
-                to: '/contact',
-                icon: ExpandMore
-            }
-        ]
-    }
-];
+
 
 interface GratitudeFormValues {
     userIds: {value: string, name: string, picture: string}[];
+    tags: {value: string}[];
     from: string;
     body: string;
 }
@@ -94,8 +54,13 @@ interface User {
 export function LandingPage() {
     const formMethods = useForm<GratitudeFormValues>();
 
-    const { fields, append, remove } = useFieldArray<GratitudeFormValues>({
+    const { fields: userFields, append: userAppend, remove: userRemove } = useFieldArray<GratitudeFormValues, "userIds">({
         name: 'userIds',
+        control: formMethods.control
+    });
+    
+    const { fields: tagFields, append: tagAppend, remove: tagRemove } = useFieldArray<GratitudeFormValues, "tags">({
+        name: 'tags',
         control: formMethods.control
     });
 
@@ -112,7 +77,9 @@ export function LandingPage() {
 
     const [ users, setUsers ] = useState<User[]>([]);
     const [ showUsers, setShowUsers ] = useState(false);
-    const [ searchValue, setSearchValue ] = useState('');
+    const [ userSearchValue, setUserSearchValue ] = useState('');
+    const [ tagSearchValue, setTagSearchValue ] = useState('');
+
 
     console.log(users);
 
@@ -128,17 +95,15 @@ export function LandingPage() {
 
     return (
         <div className={styles.root}>
-            <SideNav navButtonGroups={navButtonGroups} />
-
-            <div className={styles.content}>
+            {/* <div className={styles.content}> */}
                 <div className={styles.topNav}>
                     <MuiTextField
                         variant="standard"
                         placeholder="Search"
                         helperText="Who are you grateful for?"
-                        value={searchValue}
+                        value={userSearchValue}
                         onChange={async (event) => {
-                            setSearchValue(event.target.value);
+                            setUserSearchValue(event.target.value);
                             setUsers(await query('Users', event.target.value) as User[]);
                         }}
                         onFocus={() => setShowUsers(true)}
@@ -161,16 +126,16 @@ export function LandingPage() {
                 {showUsers && users.map(user => (
                     <div
                         key={user.id}
-                        className={styles.flex}
+                        className={styles.usersSearchBox}
                         onClick={() => {
                             // if (users.filter())
-                            append({
+                            userAppend({
                                 value: user.id,
                                 name: user.name,
                                 picture: user.picture
                             });
 
-                            setSearchValue('');
+                            setUserSearchValue('');
                             setUsers([]);
                         }}
                     >
@@ -183,6 +148,22 @@ export function LandingPage() {
                     </div>
                 ))}
 
+                <MuiTextField
+                    variant="standard"
+                    placeholder="Tags"
+                    helperText="What are you grateful for?"
+                    value={tagSearchValue}
+                    onChange={(event) => {
+                        setTagSearchValue(event.target.value);
+                    }}
+                    onKeyDown={event => {
+                        if (event.code === 'Enter' || event.code === 'Space') {
+                            tagAppend({ value: tagSearchValue });
+                            setTagSearchValue('');
+                        }
+                    }}
+                />
+
                 {isAuthenticated ? (
                     <form
                         className={styles.form}
@@ -194,8 +175,8 @@ export function LandingPage() {
                                     max={4}
                                     className={styles.avatars}
                                 >
-                                    {fields.map((field, index) => (
-                                        <Tooltip title={field.name}>
+                                    {userFields.map((field, index) => (
+                                        <Tooltip title={field.name} key={field.id}>
                                             <Badge
                                                 overlap="circular"
                                                 anchorOrigin={{
@@ -206,7 +187,7 @@ export function LandingPage() {
                                                     <div className={styles.delButton}>
                                                         <IconButton
                                                             onClick={() => {
-                                                                remove(index);
+                                                                userRemove(index);
                                                             }}
                                                             size="small"
                                                         >
@@ -224,6 +205,16 @@ export function LandingPage() {
                                         </Tooltip>
                                     ))}
                                 </AvatarGroup>
+
+                                <div>
+                                    {tagFields.map((tagField, index) => (
+                                        <Chip
+                                            key={tagField.id}
+                                            label={tagField.value}
+                                            onDelete={() => tagRemove(index)}
+                                        />
+                                    ))}
+                                </div>
                             </div>
 
 
@@ -264,7 +255,7 @@ export function LandingPage() {
                 >
                     Fetch data
                 </Button>
-            </div>
+            {/* </div> */}
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { Button, Typography } from '@material-ui/core';
+import { Button, IconButton, Tooltip, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
@@ -14,7 +14,7 @@ export interface NavButtonGroup {
 interface NavButton {
     name: string;
     to: string;
-    icon: FC;
+    icon: FC<any>;
 }
 
 export interface SideNavProps {
@@ -30,34 +30,30 @@ export function SideNav({ navButtonGroups }: SideNavProps) {
                 alt="alt"
             />
 
-            {navButtonGroups.map(navButtonGroup => (
-                <div
-                    key={navButtonGroup.title}
-                    className={styles.group}
-                >
-                    <Typography variant="h5">
-                        {navButtonGroup.title}
-                    </Typography>
+            <div className={clsx(styles.buttons, styles.flex)}>
+                {navButtonGroups.map(navButtonGroup => (
+                    navButtonGroup.navButtons.map(navButton => {
+                        const { icon: Icon, name, to } = navButton;
 
-                    <div className={clsx(styles.flex, styles.buttons)}>
-                        {navButtonGroup.navButtons.map(navButton => {
-                            const { icon: Icon, name, to } = navButton;
-
-                            return (
-                                <Button
-                                    key={name}
+                        return (
+                            <Tooltip title={name} key={name} placement='right'>
+                                <IconButton
                                     component={Link}
                                     to={to}
+                                    color='primary'
+                                    size='large'
+                                    className={styles.button}
                                 >
-                                    <Icon />
+                                    <Icon
+                                        className={styles.icon}
+                                    />
+                                </IconButton>
+                            </Tooltip>
+                        );
+                    })
+                ))}
+            </div>
 
-                                    {name}
-                                </Button>
-                            );
-                        })}
-                    </div>
-                </div>
-            ))}
         </div>
     );
 }

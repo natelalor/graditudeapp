@@ -1,8 +1,12 @@
 @use 'src/scss/utils';
 
 .root {
-  display: grid;
-  grid-template-columns: .25fr auto;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  // display: grid;
+  // grid-template-columns: .25fr auto;
   min-height: 100vh;
 }
 
@@ -15,7 +19,7 @@
   // justify-content: center;
   // font-size: calc(10px + 2vmin);
   // color: white;
-  width: 100%;
+  // width: 100%;
 }
 
 .topNav {
@@ -36,6 +40,14 @@
     opacity: 1;
     visibility: visible;
   }
+}
+
+.usersSearchBox {
+  display: flex;
+}
+
+.usersSearchBox:hover {
+  background: rgba(0,0,0,.2);
 }
 
 .form {
