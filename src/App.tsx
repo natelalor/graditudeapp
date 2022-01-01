@@ -1,10 +1,12 @@
 import { BungalowOutlined, FaceOutlined, VolunteerActivismOutlined } from '@material-ui/icons';
 import { Route, Switch } from 'react-router-dom';
-import { FeedPage } from './views/FeedPage/FeedPage';
-import { NavButtonGroup, SideNav } from './views/LandingPage/components/SideNav';
 
+import styles from './App.module.scss';
+import { FeedPage } from './views/FeedPage/FeedPage';
 import { LandingPage } from './views/LandingPage/LandingPage';
+import { NavButtonGroup, SideNav } from './views/LandingPage/components/SideNav';
 import { LoginPage } from './views/LoginPage/LoginPage';
+
 
 const navButtonGroups: NavButtonGroup[] = [
     {
@@ -31,40 +33,41 @@ const navButtonGroups: NavButtonGroup[] = [
 
 export default function App() {
     return (
-        <div style={{display: 'flex'}}>
+        <div className={styles.root}>
             <SideNav navButtonGroups={navButtonGroups} />
 
+            <div className={styles.content}>
+                <Switch>
+                    <Route
+                        exact
+                        path="/appreciate"
+                        component={LandingPage}
+                    />
 
-            <Switch>
-                <Route
-                    exact
-                    path="/appreciate"
-                    component={LandingPage}
-                />
+                    <Route
+                        exact
+                        path="/"
+                        component={LandingPage}
+                    />
 
-                <Route
-                    exact
-                    path="/"
-                    component={LandingPage}
-                />
+                    <Route
+                        exact
+                        path="/login"
+                        component={LoginPage}
+                    />
 
-                <Route
-                    exact
-                    path="/login"
-                    component={LoginPage}
-                />
+                    <Route
+                        exact
+                        path="/feed"
+                        component={FeedPage}
+                    />
 
-                <Route
-                    exact
-                    path="/feed"
-                    component={FeedPage}
-                />
-
-                {/* <Route
-                    path="*"
-                    component={AuthenticatedRouteSwitch}
-                /> */}
-            </Switch>
+                    {/* <Route
+                        path="*"
+                        component={AuthenticatedRouteSwitch}
+                    /> */}
+                </Switch>
+            </div>
         </div>
     );
 }

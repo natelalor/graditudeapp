@@ -1,49 +1,12 @@
 @use 'src/scss/utils';
 
 .root {
-  flex: 1;
-
   display: flex;
   flex-direction: column;
   // display: grid;
   // grid-template-columns: .25fr auto;
   min-height: 100vh;
-}
-
-.content {
-  // min-height: 100vh;
-  // display: flex;
-  // gap: utils.spacing(4);
-  // flex-direction: column;
-  // align-items: center;
-  // justify-content: center;
-  // font-size: calc(10px + 2vmin);
-  // color: white;
-  // width: 100%;
-}
-
-.topNav {
-  // border-bottom: solid gray 1px;
-  padding: utils.spacing(2);
-  margin-bottom: utils.spacing(1);
-}
-
-.searchHelperText {
-  position: absolute;
-  bottom: -21px;
-
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 250ms ease;
-
-  &:global(.Mui-focused) {
-    opacity: 1;
-    visibility: visible;
-  }
-}
-
-.usersSearchBox {
-  display: flex;
+  padding: utils.spacing(10);
 }
 
 .usersSearchBox:hover {
@@ -73,8 +36,6 @@
 
 .avatars {
   flex-direction: row;
-  // align-items: baseline;
-  // justify-content: baseline;
 }
 
 .avatar {
@@ -82,6 +43,6 @@
   width: utils.spacing(8);
 }
 
-.todo {
-  
+.image {
+  width: 100%;
 }

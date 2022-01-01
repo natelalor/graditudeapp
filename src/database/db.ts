@@ -1,3 +1,4 @@
+/* eslint camelcase: "off" */
 import * as AWS from 'aws-sdk';
 
 
@@ -69,9 +70,9 @@ export const putData = (tableName: any, data: any) => {
 export interface User {
     id: string;
     email: string;
-    email_verified: boolean; // eslint-disable-line
-    family_name: string; // eslint-disable-line
-    given_name: string; // eslint-disable-line
+    email_verified: boolean;
+    family_name: string;
+    given_name: string;
     ['http://localhost:3000/user_id']: string;
     ['http://localhost:3000/user_metadata']: { isNew: boolean };
     locale: string;
@@ -79,7 +80,7 @@ export interface User {
     nickname: string;
     picture: string;
     sub: string;
-    updated_at: string; // eslint-disable-line
+    updated_at: string;
 }
 
 export interface Gratitude {
@@ -98,8 +99,6 @@ export const query = async (tableName: string, searchTerm: string) => {
         Statement: `SELECT * FROM ${tableName} WHERE contains("lowercaseName", '${searchTerm}') OR contains("lowercaseEmail", '${searchTerm}')`,
         ConsistentRead: true || false
     };
-
-    console.log(params);
 
     const res = await dynamodb.executeStatement(params).promise();
 

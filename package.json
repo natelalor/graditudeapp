@@ -27,7 +27,8 @@
     "typescript": "^4.5.4",
     "util": "^0.12.4",
     "uuid": "^8.3.2",
-    "web-vitals": "^2.1.2"
+    "web-vitals": "^2.1.2",
+    "wombot": "github:adri326/wombot"
   },
   "scripts": {
     "start": "react-scripts start",
