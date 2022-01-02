@@ -1,7 +1,9 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import { BungalowOutlined, FaceOutlined, VolunteerActivismOutlined } from '@material-ui/icons';
 import { Route, Switch } from 'react-router-dom';
 
 import styles from './App.module.scss';
+import { AccountPage } from './views/AccountPage/AccountPage';
 import { FeedPage } from './views/FeedPage/FeedPage';
 import { LandingPage } from './views/LandingPage/LandingPage';
 import { NavButtonGroup, SideNav } from './views/LandingPage/components/SideNav';
@@ -19,7 +21,7 @@ const navButtonGroups: NavButtonGroup[] = [
             },
             {
                 name: 'My account',
-                to: '/login',
+                to: '/account',
                 icon: FaceOutlined
             },
             {
@@ -32,6 +34,8 @@ const navButtonGroups: NavButtonGroup[] = [
 ];
 
 export default function App() {
+    const { isAuthenticated } = useAuth0();
+
     return (
         <div className={styles.root}>
             <SideNav navButtonGroups={navButtonGroups} />
@@ -54,6 +58,12 @@ export default function App() {
                         exact
                         path="/login"
                         component={LoginPage}
+                    />
+
+                    <Route
+                        exact
+                        path="/account"
+                        component={isAuthenticated ? AccountPage : LoginPage}
                     />
 
                     <Route

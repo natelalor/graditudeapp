@@ -62,6 +62,7 @@ export function GratitudeWipDisplay({ wipGratitude, setIsEditting }: GratitudeWi
                 imageUrl,
                 from: user?.['http://localhost:3000/user_id'],
                 ...wipGratitude,
+                users: wipGratitude.users.map(user => JSON.stringify(user)),
                 tags: wipGratitude?.tags.map(tag => tag.value)
             };
 
