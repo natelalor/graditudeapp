@@ -3,7 +3,7 @@ import {
 } from '@material-ui/core';
 import { Search } from '@material-ui/icons';
 import clsx from 'clsx';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 
 import { query, User } from '../../../database/db';
 
@@ -34,7 +34,7 @@ export default function AsyncAutoComplete(props: AsyncAutoCompleteProps) {
                     setInputValue('');
 
                     props.userAppend({
-                        value: newValue.id,
+                        id: newValue.id,
                         name: newValue.name,
                         picture: newValue.picture
                     });

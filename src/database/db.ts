@@ -1,5 +1,6 @@
 /* eslint camelcase: "off" */
 import * as AWS from 'aws-sdk';
+import { v4 as uuidv4 } from 'uuid';
 
 
 const configuration = {
@@ -52,19 +53,13 @@ export const fetchGratitude = (user: any) => {
     });
 };
 
-export const putData = (tableName: any, data: any) => {
+export const putData = (tableName: string, data: any) => {
     const params = {
         TableName: tableName,
         Item: data
     };
 
-    docClient.put(params, (err, data) => {
-        if (err) {
-            console.log('Error', err);
-        } else {
-            console.log('Success', data);
-        }
-    });
+    return docClient.put(params).promise();
 };
 
 export interface User {
@@ -83,16 +78,22 @@ export interface User {
     updated_at: string;
 }
 
+export interface UserMeta {
+    id: string;
+    name: string;
+    picture: string;
+}
+
 export interface Gratitude {
     id: string;
-    userIds: string[];
+    users: UserMeta[];
+    tags: string[];
+    imageUrl: string;
     from: string;
     body: string;
 }
 
-export const putGratitude = (gratitude: Gratitude) => {
-    putData('Gratitude', gratitude);
-};
+export const putGratitude = (gratitude: Gratitude) => putData('Gratitude', gratitude);
 
 export const query = async (tableName: string, searchTerm: string) => {
     const params = {
@@ -103,4 +104,38 @@ export const query = async (tableName: string, searchTerm: string) => {
     const res = await dynamodb.executeStatement(params).promise();
 
     return res.Items?.map(item => AWS.DynamoDB.Converter.unmarshall(item));
+};
+
+const S3_BUCKET = 'gratitude-app';
+const REGION = 'us-east-2';
+
+const myBucket = new AWS.S3({
+    params: { Bucket: S3_BUCKET },
+    region: REGION
+});
+
+const CORS_PREFIX = 'https://infinite-ravine-44623.herokuapp.com/';
+
+export const uploadFileToS3 = async (fileUrl: string) => {
+    const res = await fetch(CORS_PREFIX + fileUrl);
+
+    if (!res.body) {
+        throw new Error('no image');
+    }
+
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const fileExtension = fileUrl.split('?')[0].slice(-4);
+    const fileKey = uuidv4() + fileExtension;
+
+    const params = {
+        Body: buffer,
+        Bucket: S3_BUCKET,
+        Key: fileKey
+    };
+
+    await myBucket.putObject(params).promise();
+
+    return `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${fileKey}`;
 };
