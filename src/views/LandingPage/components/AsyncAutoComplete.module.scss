@@ -1,0 +1,19 @@
+@use 'src/scss/utils';
+
+.usersSearchBox {
+    display: flex;
+}
+
+.searchHelperText {
+    position: absolute;
+    bottom: -21px;
+  
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 250ms ease;
+  
+    &:global(.Mui-focused) {
+      opacity: 1;
+      visibility: visible;
+    }
+  }

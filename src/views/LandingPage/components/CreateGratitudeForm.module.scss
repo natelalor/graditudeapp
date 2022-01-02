@@ -1,0 +1,40 @@
+@use 'src/scss/utils';
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: utils.spacing(2);
+}
+
+.delButton {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: utils.spacing(3.5);
+  width: utils.spacing(3.5);
+  background: white;
+}
+
+.avatars {
+  flex-direction: row;
+}
+
+.avatar {
+  height: utils.spacing(8);
+  width: utils.spacing(8);
+}
+
+.searchHelperText {
+  position: absolute;
+  bottom: -21px;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms ease;
+
+  &:global(.Mui-focused) {
+    opacity: 1;
+    visibility: visible;
+  }
+}

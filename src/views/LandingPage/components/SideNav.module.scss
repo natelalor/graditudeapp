@@ -7,29 +7,38 @@
 
 .root {
     align-items: center;
+    justify-content: flex-start;
     gap: utils.spacing(4);
     border-right: solid gray 1px;
-    background: rgb(238, 238, 238);
+    background: rgb(31, 31, 31);
 }
 
 .logo {
-    height: 200px;
-    width: 200px;
-    border: solid gray 1px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: utils.spacing(4);
+    height: utils.spacing(8);
+    width: utils.spacing(8);
+    margin-top: utils.spacing(3);
 }
 
 .group {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    // width: 100%;
     padding-left: utils.spacing(4);
 }
 
+.button {
+    border-radius: 0;
+    padding: utils.spacing(4);
+}
+
 .buttons {
-    align-items: baseline;
+    margin-top: utils.spacing(-10);
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon {
+    font-size: utils.spacing(5);
+    color: rgb(250, 250, 250);
 }

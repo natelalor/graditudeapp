@@ -1,0 +1,36 @@
+@use 'src/scss/utils';
+
+.image {
+  max-width: calc(50% - utils.spacing(2));
+  max-height: calc(100vh - utils.spacing(16));
+  min-width: 350px;
+}
+
+.caption {
+    display: flex;
+    flex-direction: column;
+    justify-content: baseline;
+    gap: utils.spacing(2);
+    flex-grow: 1;
+    align-self: stretch;
+    width: 40%;
+}
+
+.alert {
+    width: min-content;
+}
+
+.alert div:last-child {
+    display: flex;
+    align-items: center;
+    gap: utils.spacing(2);
+}
+
+.avatars {
+    flex-direction: row;
+}
+  
+.avatar {
+    height: utils.spacing(8);
+    width: utils.spacing(8);
+}
