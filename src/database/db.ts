@@ -79,7 +79,7 @@ export interface User {
 }
 
 export interface UserMeta {
-    id: string;
+    userId: string;
     name: string;
     picture: string;
 }

@@ -11,7 +11,7 @@ import styles from './AsyncAutoComplete.module.scss';
 
 
 interface AsyncAutoCompleteProps {
-    userAppend: any;
+    userAppend: any; // todo
 }
 
 export default function AsyncAutoComplete(props: AsyncAutoCompleteProps) {
@@ -29,12 +29,11 @@ export default function AsyncAutoComplete(props: AsyncAutoCompleteProps) {
             loading={loading}
             open={!!inputValue}
             onChange={(event, newValue) => {
-                console.log(newValue);
                 if (newValue && typeof newValue !== 'string') {
                     setInputValue('');
 
                     props.userAppend({
-                        id: newValue.id,
+                        userId: newValue.id,
                         name: newValue.name,
                         picture: newValue.picture
                     });

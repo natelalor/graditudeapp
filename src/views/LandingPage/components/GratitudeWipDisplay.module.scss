@@ -1,0 +1,96 @@
+@use 'src/scss/utils';
+
+.root {
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: center;
+  // height: 100vh;
+}
+
+.paper {
+  display: flex;
+  flex-direction: column;
+  margin: utils.spacing(5);
+  // height: calc(100% - 20px);
+  // height: 100px;
+  padding: utils.spacing(5);
+  gap: utils.spacing(1);
+}
+
+.usersSearchBox:hover {
+  background: rgba(0,0,0,.2);
+}
+
+.flex {
+  display: flex;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: utils.spacing(2);
+}
+
+.delButton {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: utils.spacing(3.5);
+  width: utils.spacing(3.5);
+  // border: solid white 1px;
+  background: white;
+}
+
+.avatars {
+  flex-direction: row;
+}
+
+.avatar {
+  height: utils.spacing(8);
+  width: utils.spacing(8);
+}
+
+.image {
+  max-width: calc(50% - utils.spacing(2));
+  max-height: calc(100vh - utils.spacing(16));
+  min-width: 350px;
+}
+
+.searchHelperText {
+  position: absolute;
+  bottom: -21px;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms ease;
+
+  &:global(.Mui-focused) {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+  gap: utils.spacing(2);
+  flex-grow: 1;
+  align-self: stretch;
+  width: 40%;
+}
+
+.alert {
+  width: min-content;
+}
+
+.alert div:last-child {
+  display: flex;
+  align-items: center;
+  gap: utils.spacing(2);
+}
+
+.body {
+  // width: 50%;
+}
