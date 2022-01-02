@@ -4,17 +4,18 @@ import {
 import { Search } from '@material-ui/icons';
 import clsx from 'clsx';
 import { useState } from 'react';
+import { FieldArrayMethodProps } from 'react-hook-form';
 
-import { query, User } from '../../../database/db';
+import { query, User, UserMeta } from '../../../database/db';
 
 import styles from './AsyncAutoComplete.module.scss';
 
 
 interface AsyncAutoCompleteProps {
-    userAppend: any; // todo
+    userAppend: (value: Partial<UserMeta> | Partial<UserMeta>[], options?: FieldArrayMethodProps | undefined) => void;
 }
 
-export default function AsyncAutoComplete(props: AsyncAutoCompleteProps) {
+export default function AsyncAutoComplete({ userAppend }: AsyncAutoCompleteProps) {
     const [ users, setUsers ] = useState<Partial<User>[]>([]);
     const [ value ] = useState<Partial<User>>({});
     const [ loading, setLoading ] = useState(false);
@@ -32,7 +33,7 @@ export default function AsyncAutoComplete(props: AsyncAutoCompleteProps) {
                 if (newValue && typeof newValue !== 'string') {
                     setInputValue('');
 
-                    props.userAppend({
+                    userAppend({
                         userId: newValue.id,
                         name: newValue.name,
                         picture: newValue.picture

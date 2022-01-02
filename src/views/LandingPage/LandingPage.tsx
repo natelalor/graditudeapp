@@ -26,24 +26,22 @@ export function LandingPage() {
     }
 
     return (
-        <div className={styles.root}>
-            <Paper
-                className={styles.paper}
-                elevation={14}
-            >
-                {isEditting ? (
-                    <CreateGratitudeForm
-                        setWipGratitude={setWipGratitude}
-                        setIsEditting={setIsEditting}
-                        defaultValues={wipGratitude}
-                    />
-                ) : (
-                    <GratitudeWipDisplay
-                        wipGratitude={wipGratitude}
-                        setIsEditting={setIsEditting}
-                    />
-                )}
-            </Paper>
-        </div>
+        <Paper
+            className={styles.paper}
+            elevation={14}
+        >
+            {isEditting ? (
+                <CreateGratitudeForm
+                    setWipGratitude={setWipGratitude}
+                    setIsEditting={setIsEditting}
+                    defaultValues={wipGratitude}
+                />
+            ) : (
+                <GratitudeWipDisplay
+                    wipGratitude={wipGratitude}
+                    setIsEditting={setIsEditting}
+                />
+            )}
+        </Paper>
     );
 }

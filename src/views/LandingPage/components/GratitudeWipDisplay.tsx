@@ -117,11 +117,9 @@ export function GratitudeWipDisplay({ wipGratitude, setIsEditting }: GratitudeWi
                         </Alert>
                     )}
 
-                    <div className={styles.body}>
-                        <Typography>
-                            {wipGratitude?.body}
-                        </Typography>
-                    </div>
+                    <Typography>
+                        {wipGratitude?.body}
+                    </Typography>
 
                     <AvatarGroup
                         max={4}
