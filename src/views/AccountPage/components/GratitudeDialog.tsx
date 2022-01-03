@@ -43,9 +43,11 @@ export function GratitudeDialog(props: Omit<RoutedDialogProps, 'title'>) {
             {gratitude ? isEditting ? (
                 <AddEditGratitudeForm
                     className={styles.root}
-                    setGratitude={setGratitude}
-                    onDone={() => setIsEditting(false)}
                     defaultValues={gratitude}
+                    onDone={(updatedGratitude?: Gratitude) => {
+                        setIsEditting(false);
+                        updatedGratitude && setGratitude(updatedGratitude);
+                    }}
                 />
             ) : (
                 <GratitudeDisplay

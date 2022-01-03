@@ -13,7 +13,8 @@ import {
 } from '@material-ui/core';
 import { RemoveCircleOutline, LocalOfferOutlined } from '@material-ui/icons';
 import clsx from 'clsx';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useSnackbar } from 'notistack';
+import { useState } from 'react';
 import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import wombot from 'wombot';
@@ -35,20 +36,20 @@ export interface GratitudeFormValues {
 }
 
 interface AddEditGratitudeFormProps {
-    setGratitude: Dispatch<SetStateAction<Gratitude | undefined>>;
-    onDone: () => void;
+    onDone: (updatedGratitude?: Gratitude) => void;
     defaultValues?: Gratitude;
     className?: string;
 }
 
 export function AddEditGratitudeForm({
-    setGratitude, onDone, defaultValues, className
+    onDone, defaultValues, className
 }: AddEditGratitudeFormProps) {
     const [ tagSearchValue, setTagSearchValue ] = useState('');
     const [ tagError, setTagError ] = useState(false);
     const [ inProgress, setInProgress ] = useState(false);
     const [ imgSrc, setImgSrc ] = useState(defaultValues?.imageUrl || '');
     const { user } = useAuth0();
+    const { enqueueSnackbar } = useSnackbar();
 
     const formMethods = useForm<GratitudeFormValues>({ defaultValues: generateDefaultValues(defaultValues) });
 
@@ -67,6 +68,11 @@ export function AddEditGratitudeForm({
     const isValidInput = tagFields.length > 0 && userFields.length > 0 && body;
 
     const executeImageGeneration = async () => {
+        if (!isValidInput) {
+            enqueueSnackbar('Please add tags and body text to generate an image');
+            return;
+        }
+
         setInProgress(true);
         setImgSrc('blank.jpg');
 
@@ -88,22 +94,12 @@ export function AddEditGratitudeForm({
     };
 
     const handleSubmit = formMethods.handleSubmit(async formValues => {
-        delete formValues.tagInput;
+        if (!imgSrc) {
+            enqueueSnackbar('Please generate an image first');
+            return;
+        }
 
-        // if (formValues.tags.length === 0) {
-        //     setTagError(true);
-        // } else {
-        //     setGratitude({
-        //         ...formValues,
-        //         from: user?.['http://localhost:3000/user_id'],
-        //         users: formValues.users.map(user => JSON.stringify(user)),
-        //         tags: formValues?.tags.map(tag => tag.value)
-        //     });
-        //     setIsEditting(false);
-        // }
-        // if (inProgress || !imgSrc) {
-        //     return;
-        // }
+        delete formValues.tagInput; // TODO
 
         try {
             const isNewImage = imgSrc !== defaultValues?.imageUrl;
@@ -119,9 +115,7 @@ export function AddEditGratitudeForm({
 
             await putGratitude(updatedGratitude);
 
-            setGratitude(updatedGratitude); // TODO this state probably isn't necessary
-
-            onDone();
+            onDone(updatedGratitude);
         } catch (error) {
             console.log(error);
         }
@@ -236,7 +230,7 @@ export function AddEditGratitudeForm({
                     className={styles.imageDiv}
                     style={{
                         backgroundImage: `url('${imgSrc}')`,
-                        filter: inProgress ? 'blur(2px) brightness(0.7);' : undefined
+                        filter: inProgress ? 'brightness(0.7)' : undefined
                     }}
                 >
                     {inProgress ? (
@@ -266,7 +260,7 @@ export function AddEditGratitudeForm({
 
             <Button
                 variant="contained"
-                onClick={onDone}
+                onClick={() => onDone()}
             >
                 Cancel
             </Button>

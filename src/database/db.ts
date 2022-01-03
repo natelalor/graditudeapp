@@ -27,6 +27,8 @@ export interface UserMeta {
 
 export interface Gratitude {
     id: string;
+    // TODO created at
+    // TODO updated at
     users: string[];
     tags: string[];
     imageUrl: string;

@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@emotion/react';
 import { StyledEngineProvider, CssBaseline } from '@material-ui/core';
 import AWS, { ConfigurationOptions } from 'aws-sdk';
+import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -24,13 +25,15 @@ ReactDOM.render(
     <React.StrictMode>
         <StyledEngineProvider injectFirst>
             <ThemeProvider theme={theme}>
-                <BrowserRouter>
-                    <Auth0ProviderWithHistory>
-                        <CssBaseline />
+                <SnackbarProvider autoHideDuration={1500}>
+                    <BrowserRouter>
+                        <Auth0ProviderWithHistory>
+                            <CssBaseline />
 
-                        <App />
-                    </Auth0ProviderWithHistory>
-                </BrowserRouter>
+                            <App />
+                        </Auth0ProviderWithHistory>
+                    </BrowserRouter>
+                </SnackbarProvider>
             </ThemeProvider>
         </StyledEngineProvider>
     </React.StrictMode>,
