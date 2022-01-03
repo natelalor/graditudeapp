@@ -1,12 +1,11 @@
 import {
-    Dispatch, SetStateAction, useCallback, useState
+    useCallback, useState
 } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { RoutedDialog, RoutedDialogProps } from '../../../components/RoutedDialog/RoutedDialog';
 import { doCustomQuery, Gratitude } from '../../../database/db';
 import useAsyncEffect from '../../../utils/useAsyncEffect';
-import { PartialGratitude } from '../../LandingPage/LandingPage';
 import { AddEditGratitudeForm } from '../../LandingPage/components/AddEditGratitudeForm';
 import { GratitudeDisplay } from '../../LandingPage/components/GratitudeDisplay';
 
@@ -44,8 +43,8 @@ export function GratitudeDialog(props: Omit<RoutedDialogProps, 'title'>) {
             {gratitude ? isEditting ? (
                 <AddEditGratitudeForm
                     className={styles.root}
-                    setGratitude={setGratitude as Dispatch<SetStateAction<PartialGratitude | Gratitude | undefined>>}
-                    setIsEditting={setIsEditting}
+                    setGratitude={setGratitude}
+                    onDone={() => setIsEditting(false)}
                     defaultValues={gratitude}
                 />
             ) : (

@@ -1,15 +1,27 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import {
-    AvatarGroup, Tooltip, Badge, IconButton, Avatar, InputAdornment, Chip, TextField as MuiTextField, Button
+    AvatarGroup,
+    Tooltip,
+    Badge,
+    IconButton,
+    Avatar,
+    InputAdornment,
+    Chip,
+    TextField as MuiTextField,
+    Button,
+    CircularProgress
 } from '@material-ui/core';
 import { RemoveCircleOutline, LocalOfferOutlined } from '@material-ui/icons';
 import clsx from 'clsx';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
+import wombot from 'wombot';
 
 import { TextField } from '../../../components/form/TextField';
-import { UserMeta } from '../../../database/db';
-import { PartialGratitude } from '../LandingPage';
+import {
+    Gratitude, putGratitude, uploadFileToS3, UserMeta
+} from '../../../database/db';
 
 import AsyncAutoComplete from './AsyncAutoComplete';
 import styles from './CreateGratitudeForm.module.scss';
@@ -19,20 +31,23 @@ export interface GratitudeFormValues {
     users: UserMeta[];
     tags: { value: string }[];
     body: string;
+    tagInput?: string;
 }
 
 interface AddEditGratitudeFormProps {
-    setGratitude: Dispatch<SetStateAction<PartialGratitude | undefined>>;
-    setIsEditting: Dispatch<SetStateAction<boolean>>;
-    defaultValues?: PartialGratitude;
+    setGratitude: Dispatch<SetStateAction<Gratitude | undefined>>;
+    onDone: () => void;
+    defaultValues?: Gratitude;
     className?: string;
 }
 
 export function AddEditGratitudeForm({
-    setGratitude, setIsEditting, defaultValues, className
+    setGratitude, onDone, defaultValues, className
 }: AddEditGratitudeFormProps) {
     const [ tagSearchValue, setTagSearchValue ] = useState('');
     const [ tagError, setTagError ] = useState(false);
+    const [ inProgress, setInProgress ] = useState(false);
+    const [ imgSrc, setImgSrc ] = useState(defaultValues?.imageUrl || '');
     const { user } = useAuth0();
 
     const formMethods = useForm<GratitudeFormValues>({ defaultValues: generateDefaultValues(defaultValues) });
@@ -47,17 +62,68 @@ export function AddEditGratitudeForm({
         control: formMethods.control
     });
 
-    const handleSubmit = formMethods.handleSubmit(formValues => {
-        if (formValues.tags.length === 0) {
-            setTagError(true);
-        } else {
-            setGratitude({
+    const body = formMethods.watch('body');
+
+    const isValidInput = tagFields.length > 0 && userFields.length > 0 && body;
+
+    const executeImageGeneration = async () => {
+        setInProgress(true);
+        setImgSrc('blank.jpg');
+
+        const generationPrompt = tagFields.reduce((prev, curr) => `${prev} ${curr.value}`, '');
+
+        try {
+            await wombot(generationPrompt, 10, (data: any) => {
+                data.state === 'generated' && setInProgress(false);
+
+                const photoUrl = data?.task?.photo_url_list?.at(-1);
+                photoUrl && setImgSrc(photoUrl);
+            }, {
+                final: false,
+                identify_key: 'AIzaSyDCvp5MTJLUdtBYEKYWXJrlLzu1zuKM6Xw' // eslint-disable-line
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleSubmit = formMethods.handleSubmit(async formValues => {
+        delete formValues.tagInput;
+
+        // if (formValues.tags.length === 0) {
+        //     setTagError(true);
+        // } else {
+        //     setGratitude({
+        //         ...formValues,
+        //         from: user?.['http://localhost:3000/user_id'],
+        //         users: formValues.users.map(user => JSON.stringify(user)),
+        //         tags: formValues?.tags.map(tag => tag.value)
+        //     });
+        //     setIsEditting(false);
+        // }
+        // if (inProgress || !imgSrc) {
+        //     return;
+        // }
+
+        try {
+            const isNewImage = imgSrc !== defaultValues?.imageUrl;
+
+            const updatedGratitude: Gratitude = {
                 ...formValues,
-                from: user?.['http://localhost:3000/user_id'],
+                imageUrl: isNewImage ? await uploadFileToS3(imgSrc) : defaultValues.imageUrl,
+                id: defaultValues?.id || uuidv4(),
+                from: defaultValues?.from || user?.['http://localhost:3000/user_id'],
                 users: formValues.users.map(user => JSON.stringify(user)),
                 tags: formValues?.tags.map(tag => tag.value)
-            });
-            setIsEditting(false);
+            };
+
+            await putGratitude(updatedGratitude);
+
+            setGratitude(updatedGratitude); // TODO this state probably isn't necessary
+
+            onDone();
+        } catch (error) {
+            console.log(error);
         }
     });
 
@@ -165,17 +231,50 @@ export function AddEditGratitudeForm({
                 />
             </FormProvider>
 
+            {imgSrc && (
+                <div
+                    className={styles.imageDiv}
+                    style={{
+                        backgroundImage: `url('${imgSrc}')`,
+                        filter: inProgress ? 'blur(2px) brightness(0.7);' : undefined
+                    }}
+                >
+                    {inProgress ? (
+                        <CircularProgress
+                            color="inherit"
+                            size={50}
+                        />
+                    ) : null}
+                </div>
+            )}
+
             <Button
                 variant="contained"
-                onClick={handleSubmit}
+                onClick={executeImageGeneration}
+                disabled={!isValidInput}
             >
-                Generate
+                {imgSrc ? 'Regenerate image' : 'Generate image'}
+            </Button>
+
+            <Button
+                variant="contained"
+                type="submit"
+                // disabled={!imgSrc && !inProgress}
+            >
+                Save
+            </Button>
+
+            <Button
+                variant="contained"
+                onClick={onDone}
+            >
+                Cancel
             </Button>
         </form>
     );
 }
 
-function generateDefaultValues(defaultValues?: PartialGratitude): GratitudeFormValues | undefined {
+function generateDefaultValues(defaultValues?: Gratitude): GratitudeFormValues | undefined {
     return defaultValues ? ({
         ...defaultValues,
         users: defaultValues.users.map(user => JSON.parse(user)),
