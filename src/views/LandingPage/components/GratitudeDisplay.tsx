@@ -1,4 +1,3 @@
-import { useAuth0 } from '@auth0/auth0-react';
 import {
     Alert, CircularProgress, Typography, AvatarGroup, Tooltip, Avatar, Chip, Button
 } from '@material-ui/core';
@@ -8,31 +7,33 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import wombot from 'wombot';
 
-import { uploadFileToS3, Gratitude, putGratitude } from '../../../database/db';
+import {
+    uploadFileToS3, Gratitude, putGratitude, UserMeta
+} from '../../../database/db';
+import { PartialGratitude } from '../LandingPage';
 
-import { GratitudeFormValues } from './CreateGratitudeForm';
-import styles from './CreateGratitudeForm.module.scss';
+import styles from './GratitudeDisplay.module.scss';
 
 
-interface GratitudeWipDisplayProps {
-    wipGratitude: GratitudeFormValues | undefined;
+interface GratitudeDisplayProps {
+    gratitude: PartialGratitude | undefined;
     setIsEditting: Dispatch<SetStateAction<boolean>>;
+    className?: string;
 }
 
-export function GratitudeWipDisplay({ wipGratitude, setIsEditting }: GratitudeWipDisplayProps) {
-    const [ imgSrc, setImgSrc ] = useState('');
+export function GratitudeDisplay({ gratitude, setIsEditting, className }: GratitudeDisplayProps) {
+    const [ imgSrc, setImgSrc ] = useState(gratitude?.imageUrl || '');
     const [ inProgress, setInProgress ] = useState(false);
-    const { user } = useAuth0();
 
     const executeImageGeneration = useCallback(async () => {
         setInProgress(true);
         setImgSrc('blank.jpg');
 
-        if (!wipGratitude) {
+        if (!gratitude) {
             return;
         }
 
-        const generationPrompt = wipGratitude.tags.reduce((prev, curr) => `${prev} ${curr.value}`, '');
+        const generationPrompt = gratitude.tags.reduce((prev, curr) => `${prev} ${curr}`, '');
 
         try {
             await wombot(generationPrompt, 10, (data: any) => {
@@ -47,26 +48,23 @@ export function GratitudeWipDisplay({ wipGratitude, setIsEditting }: GratitudeWi
         } catch (error) {
             console.log(error);
         }
-    }, [ wipGratitude ]);
+    }, [ gratitude ]);
 
     async function saveToDb() {
-        if (inProgress || !wipGratitude) {
+        if (inProgress || !gratitude) {
             return;
         }
 
         try {
             const imageUrl = await uploadFileToS3(imgSrc);
 
-            const gratitude: Gratitude = {
+            const updatedGratitude: Gratitude = {
+                ...gratitude,
                 id: uuidv4(),
-                imageUrl,
-                from: user?.['http://localhost:3000/user_id'],
-                ...wipGratitude,
-                users: wipGratitude.users.map(user => JSON.stringify(user)),
-                tags: wipGratitude?.tags.map(tag => tag.value)
+                imageUrl
             };
 
-            await putGratitude(gratitude);
+            await putGratitude(updatedGratitude);
 
             console.log('success');
         } catch (error) {
@@ -76,11 +74,16 @@ export function GratitudeWipDisplay({ wipGratitude, setIsEditting }: GratitudeWi
 
     useEffect(() => {
         // update image when wip gratitude is updated
-        wipGratitude && executeImageGeneration();
-    }, [ wipGratitude, executeImageGeneration ]);
+        if (gratitude) {
+            gratitude.imageUrl && setImgSrc(gratitude.imageUrl);
+            !imgSrc && executeImageGeneration();
+        }
+    }, [
+        gratitude, executeImageGeneration, imgSrc
+    ]);
 
     return (
-        <>
+        <div className={className}>
             <div
                 style={{
                     display: 'flex',
@@ -119,32 +122,36 @@ export function GratitudeWipDisplay({ wipGratitude, setIsEditting }: GratitudeWi
                     )}
 
                     <Typography>
-                        {wipGratitude?.body}
+                        {gratitude?.body}
                     </Typography>
 
                     <AvatarGroup
                         max={4}
                         className={styles.avatars}
                     >
-                        {wipGratitude?.users.map((field) => (
-                            <Tooltip
-                                title={field.name}
-                                key={field.userId}
-                            >
-                                <Avatar
-                                    alt={field.name}
-                                    src={field.picture}
-                                    className={styles.avatar}
-                                />
-                            </Tooltip>
-                        ))}
+                        {gratitude?.users.map((userString) => {
+                            const userMeta = JSON.parse(userString) as UserMeta;
+
+                            return (
+                                <Tooltip
+                                    title={userMeta.name}
+                                    key={userMeta.userId}
+                                >
+                                    <Avatar
+                                        alt={userMeta.name}
+                                        src={userMeta.picture}
+                                        className={styles.avatar}
+                                    />
+                                </Tooltip>
+                            );
+                        })}
                     </AvatarGroup>
 
                     <div>
-                        {wipGratitude?.tags.map(tagField => (
+                        {gratitude?.tags.map(tagField => (
                             <Chip
-                                key={tagField.value}
-                                label={tagField.value}
+                                key={tagField}
+                                label={tagField}
                             />
                         ))}
                     </div>
@@ -181,6 +188,6 @@ export function GratitudeWipDisplay({ wipGratitude, setIsEditting }: GratitudeWi
                 </Button>
 
             </div>
-        </>
+        </div>
     );
 }

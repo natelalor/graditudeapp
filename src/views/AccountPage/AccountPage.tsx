@@ -3,15 +3,25 @@ import {
     Avatar, ImageList, ImageListItem, Paper, ToggleButton, ToggleButtonGroup, Tooltip, Typography
 } from '@material-ui/core';
 import { PaletteOutlined, PeopleOutlineOutlined } from '@material-ui/icons';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, FC } from 'react';
+import { RouteComponentProps } from 'react-router';
+import { Route } from 'react-router-dom';
 
+import { RoutedDialogProps } from '../../components/RoutedDialog/RoutedDialog';
 import { doCustomQuery, Gratitude } from '../../database/db';
 import useAsyncEffect from '../../utils/useAsyncEffect';
 
 import styles from './AccountPage.module.scss';
+import { GratitudeDialog } from './components/GratitudeDialog';
 
 
-export function AccountPage() {
+export interface AccountPageParams {
+    accountId: string;
+    gratitudeId: string | undefined;
+}
+
+
+export function AccountPage({ match, history }: RouteComponentProps<AccountPageParams>) {
     const { user } = useAuth0();
     const [ sentGratitudes, setSentGratitudes ] = useState<Gratitude[]>([]);
     const [ receivedGratitudes, setReceivedGratitudes ] = useState<Gratitude[]>([]);
@@ -20,7 +30,6 @@ export function AccountPage() {
     const handleDisplayChange = (event: any, newValue: 'sent' | 'received') => {
         setDisplayTab(newValue);
     };
-
 
     useAsyncEffect(useCallback(async () => {
         const userId = user?.['http://localhost:3000/user_id'];
@@ -44,11 +53,6 @@ export function AccountPage() {
             ]) as Gratitude[]);
         }
     }, [ user ]));
-
-    console.log({
-        sentGratitudes,
-        receivedGratitudes
-    });
 
     return (
         <Paper
@@ -113,7 +117,12 @@ export function AccountPage() {
                 cols={3}
             >
                 {(displayTab === 'received' ? receivedGratitudes : sentGratitudes).map(gratitude => (
-                    <ImageListItem key={gratitude.id}>
+                    <ImageListItem
+                        key={gratitude.id}
+                        onClick={() => {
+                            history.push(`${match.url}/${gratitude.id}`);
+                        }}
+                    >
                         <img
                             src={gratitude.imageUrl}
                             alt={gratitude.body}
@@ -122,6 +131,29 @@ export function AccountPage() {
                     </ImageListItem>
                 ))}
             </ImageList>
+
+            {Object.entries(dialogRoutes).map(([ path, DialogComponent ]) => (
+                <Route
+                    key={path}
+                    path={`${match.path}/${path}`}
+                    children={({ history, location, match: dialogMatch }) => (
+                        <DialogComponent
+                            closeTo={match.url}
+                            history={history}
+                            location={location}
+                            match={dialogMatch as RoutedDialogProps['match']}
+                        />
+                    )}
+                />
+            ))}
         </Paper>
     );
 }
+
+type DialogRoutes = {
+    [path: string]: FC<Omit<RoutedDialogProps, 'title' | 'children'>>;
+};
+
+const dialogRoutes: DialogRoutes = {
+    ':gratitudeId': GratitudeDialog
+};

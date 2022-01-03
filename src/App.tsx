@@ -61,7 +61,7 @@ export default function App() {
                     />
 
                     <Route
-                        exact
+                        // exact
                         path="/account"
                         component={isAuthenticated ? AccountPage : LoginPage}
                     />

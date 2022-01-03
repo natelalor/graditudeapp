@@ -1,0 +1,5 @@
+@use 'src/scss/utils';
+
+.root {
+    padding: utils.spacing(5);
+}

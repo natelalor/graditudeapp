@@ -3,15 +3,23 @@ import { Paper } from '@material-ui/core';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { putData } from '../../database/db';
+import { Gratitude, putData } from '../../database/db';
 
 import styles from './LandingPage.module.scss';
-import { CreateGratitudeForm, GratitudeFormValues } from './components/CreateGratitudeForm';
-import { GratitudeWipDisplay } from './components/GratitudeWipDisplay';
+import { CreateGratitudeForm } from './components/CreateGratitudeForm';
+import { GratitudeDisplay } from './components/GratitudeDisplay';
+
+
+export type PartialGratitude = Partial<Gratitude> & {
+    tags: string[];
+    users: string[];
+    from: string;
+    body: string;
+};
 
 
 export function LandingPage() {
-    const [ wipGratitude, setWipGratitude ] = useState<GratitudeFormValues>();
+    const [ gratitude, setGratitude ] = useState<PartialGratitude>();
     const [ isEditting, setIsEditting ] = useState(true);
 
     const { user } = useAuth0();
@@ -32,13 +40,13 @@ export function LandingPage() {
         >
             {isEditting ? (
                 <CreateGratitudeForm
-                    setWipGratitude={setWipGratitude}
+                    setGratitude={setGratitude}
                     setIsEditting={setIsEditting}
-                    defaultValues={wipGratitude}
+                    defaultValues={gratitude}
                 />
             ) : (
-                <GratitudeWipDisplay
-                    wipGratitude={wipGratitude}
+                <GratitudeDisplay
+                    gratitude={gratitude}
                     setIsEditting={setIsEditting}
                 />
             )}

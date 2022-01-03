@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import {
     AvatarGroup, Tooltip, Badge, IconButton, Avatar, InputAdornment, Chip, TextField as MuiTextField, Button
 } from '@material-ui/core';
@@ -7,6 +8,7 @@ import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
 
 import { TextField } from '../../../components/form/TextField';
 import { UserMeta } from '../../../database/db';
+import { PartialGratitude } from '../LandingPage';
 
 import AsyncAutoComplete from './AsyncAutoComplete';
 import styles from './CreateGratitudeForm.module.scss';
@@ -19,16 +21,17 @@ export interface GratitudeFormValues {
 }
 
 interface CreateGratitudeFormProps {
-    setWipGratitude: Dispatch<SetStateAction<GratitudeFormValues | undefined>>;
+    setGratitude: Dispatch<SetStateAction<PartialGratitude | undefined>>;
     setIsEditting: Dispatch<SetStateAction<boolean>>;
-    defaultValues?: GratitudeFormValues;
+    defaultValues?: PartialGratitude;
 }
 
-export function CreateGratitudeForm({ setWipGratitude, setIsEditting, defaultValues }: CreateGratitudeFormProps) {
+export function CreateGratitudeForm({ setGratitude, setIsEditting, defaultValues }: CreateGratitudeFormProps) {
     const [ tagSearchValue, setTagSearchValue ] = useState('');
     const [ tagError, setTagError ] = useState(false);
+    const { user } = useAuth0();
 
-    const formMethods = useForm<GratitudeFormValues>({ defaultValues });
+    const formMethods = useForm<GratitudeFormValues>({ defaultValues: generateDefaultValues(defaultValues) });
 
     const { fields: userFields, append: userAppend, remove: userRemove } = useFieldArray<GratitudeFormValues, 'users'>({
         name: 'users',
@@ -44,7 +47,12 @@ export function CreateGratitudeForm({ setWipGratitude, setIsEditting, defaultVal
         if (formValues.tags.length === 0) {
             setTagError(true);
         } else {
-            setWipGratitude(formValues);
+            setGratitude({
+                ...formValues,
+                from: user?.['http://localhost:3000/user_id'],
+                users: formValues.users.map(user => JSON.stringify(user)),
+                tags: formValues?.tags.map(tag => tag.value)
+            });
             setIsEditting(false);
         }
     });
@@ -161,4 +169,12 @@ export function CreateGratitudeForm({ setWipGratitude, setIsEditting, defaultVal
             </Button>
         </form>
     );
+}
+
+function generateDefaultValues(defaultValues?: PartialGratitude): GratitudeFormValues | undefined {
+    return defaultValues ? ({
+        ...defaultValues,
+        users: defaultValues.users.map(user => JSON.parse(user)),
+        tags: defaultValues.tags.map(tag => ({ value: tag }))
+    }) : undefined;
 }
