@@ -14,8 +14,8 @@
 }
 
 .logo {
-    height: utils.spacing(8);
-    width: utils.spacing(8);
+    height: utils.spacing(7);
+    width: utils.spacing(7);
     margin-top: utils.spacing(3);
 }
 
@@ -28,7 +28,7 @@
 
 .button {
     border-radius: 0;
-    padding: utils.spacing(4);
+    padding: utils.spacing(3);
 }
 
 .buttons {
@@ -39,6 +39,6 @@
 }
 
 .icon {
-    font-size: utils.spacing(5);
+    font-size: utils.spacing(4);
     color: rgb(250, 250, 250);
 }

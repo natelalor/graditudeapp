@@ -3,6 +3,7 @@ import {
     AvatarGroup, Tooltip, Badge, IconButton, Avatar, InputAdornment, Chip, TextField as MuiTextField, Button
 } from '@material-ui/core';
 import { RemoveCircleOutline, LocalOfferOutlined } from '@material-ui/icons';
+import clsx from 'clsx';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
 
@@ -20,13 +21,16 @@ export interface GratitudeFormValues {
     body: string;
 }
 
-interface CreateGratitudeFormProps {
+interface AddEditGratitudeFormProps {
     setGratitude: Dispatch<SetStateAction<PartialGratitude | undefined>>;
     setIsEditting: Dispatch<SetStateAction<boolean>>;
     defaultValues?: PartialGratitude;
+    className?: string;
 }
 
-export function CreateGratitudeForm({ setGratitude, setIsEditting, defaultValues }: CreateGratitudeFormProps) {
+export function AddEditGratitudeForm({
+    setGratitude, setIsEditting, defaultValues, className
+}: AddEditGratitudeFormProps) {
     const [ tagSearchValue, setTagSearchValue ] = useState('');
     const [ tagError, setTagError ] = useState(false);
     const { user } = useAuth0();
@@ -59,7 +63,7 @@ export function CreateGratitudeForm({ setGratitude, setIsEditting, defaultValues
 
     return (
         <form
-            className={styles.form}
+            className={clsx(styles.form, className)}
             id="appreciation-form"
             onSubmit={(event) => {
                 if (tagFields.length === 0) {

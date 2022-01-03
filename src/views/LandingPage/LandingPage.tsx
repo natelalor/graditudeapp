@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Gratitude, putData } from '../../database/db';
 
 import styles from './LandingPage.module.scss';
-import { CreateGratitudeForm } from './components/CreateGratitudeForm';
+import { AddEditGratitudeForm } from './components/AddEditGratitudeForm';
 import { GratitudeDisplay } from './components/GratitudeDisplay';
 
 
@@ -39,7 +39,7 @@ export function LandingPage() {
             elevation={14}
         >
             {isEditting ? (
-                <CreateGratitudeForm
+                <AddEditGratitudeForm
                     setGratitude={setGratitude}
                     setIsEditting={setIsEditting}
                     defaultValues={gratitude}

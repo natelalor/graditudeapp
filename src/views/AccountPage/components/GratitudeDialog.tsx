@@ -1,9 +1,13 @@
-import { useCallback, useState } from 'react';
+import {
+    Dispatch, SetStateAction, useCallback, useState
+} from 'react';
 import { useParams } from 'react-router-dom';
 
 import { RoutedDialog, RoutedDialogProps } from '../../../components/RoutedDialog/RoutedDialog';
 import { doCustomQuery, Gratitude } from '../../../database/db';
 import useAsyncEffect from '../../../utils/useAsyncEffect';
+import { PartialGratitude } from '../../LandingPage/LandingPage';
+import { AddEditGratitudeForm } from '../../LandingPage/components/AddEditGratitudeForm';
 import { GratitudeDisplay } from '../../LandingPage/components/GratitudeDisplay';
 
 import styles from './GratitudeDialog.module.scss';
@@ -17,6 +21,7 @@ interface GratitudeDialogParams {
 export function GratitudeDialog(props: Omit<RoutedDialogProps, 'title'>) {
     const { gratitudeId } = useParams<GratitudeDialogParams>();
     const [ gratitude, setGratitude ] = useState<Gratitude>();
+    const [ isEditting, setIsEditting ] = useState(false);
 
     useAsyncEffect(useCallback(async () => {
         if (gratitudeId && gratitude?.id !== gratitudeId) {
@@ -33,16 +38,24 @@ export function GratitudeDialog(props: Omit<RoutedDialogProps, 'title'>) {
 
     return (
         <RoutedDialog
-            title="Gratitude Item"
+            title=""
             {...props}
         >
-            {gratitude ? (
+            {gratitude ? isEditting ? (
+                <AddEditGratitudeForm
+                    className={styles.root}
+                    setGratitude={setGratitude as Dispatch<SetStateAction<PartialGratitude | Gratitude | undefined>>}
+                    setIsEditting={setIsEditting}
+                    defaultValues={gratitude}
+                />
+            ) : (
                 <GratitudeDisplay
                     className={styles.root}
                     gratitude={gratitude}
-                    setIsEditting={() => 'todo'}
+                    setIsEditting={setIsEditting}
                 />
-            ) : <>loading</>}
+            )
+                : <>loading</>}
         </RoutedDialog>
     );
 }

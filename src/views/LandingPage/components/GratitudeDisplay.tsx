@@ -1,9 +1,10 @@
 import {
-    Alert, CircularProgress, Typography, AvatarGroup, Tooltip, Avatar, Chip, Button
+    CircularProgress, Typography, AvatarGroup, Tooltip, Avatar, Chip, Button
 } from '@material-ui/core';
 import {
     useState, useEffect, Dispatch, SetStateAction, useCallback
 } from 'react';
+import { useHistory } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import wombot from 'wombot';
 
@@ -24,6 +25,7 @@ interface GratitudeDisplayProps {
 export function GratitudeDisplay({ gratitude, setIsEditting, className }: GratitudeDisplayProps) {
     const [ imgSrc, setImgSrc ] = useState(gratitude?.imageUrl || '');
     const [ inProgress, setInProgress ] = useState(false);
+    const history = useHistory();
 
     const executeImageGeneration = useCallback(async () => {
         setInProgress(true);
@@ -66,7 +68,7 @@ export function GratitudeDisplay({ gratitude, setIsEditting, className }: Gratit
 
             await putGratitude(updatedGratitude);
 
-            console.log('success');
+            history.push('/account');
         } catch (error) {
             console.log(error);
         }
@@ -82,6 +84,8 @@ export function GratitudeDisplay({ gratitude, setIsEditting, className }: Gratit
         gratitude, executeImageGeneration, imgSrc
     ]);
 
+    console.log(imgSrc);
+
     return (
         <div className={className}>
             <div
@@ -91,39 +95,39 @@ export function GratitudeDisplay({ gratitude, setIsEditting, className }: Gratit
                     justifyContent: 'center',
                     maxWidth: '100%',
                     flexWrap: 'wrap',
-                    gap: '12px'
+                    gap: '24px'
                 }}
             >
-                <img
-                    src={imgSrc}
-                    alt="todo"
-                    className={styles.image}
-                />
+                <div
+                    className={styles.imageDiv}
+                    style={{
+                        backgroundImage: `url('${imgSrc}')`,
+                        filter: inProgress ? 'filter: blur(5px); brightness(0.4);' : undefined
+                    }}
+                >
+                    {inProgress ? (
+                        <CircularProgress
+                            color="inherit"
+                            size={50}
+                        />
+                    ) : null}
+                </div>
 
                 <div className={styles.caption}>
-                    {inProgress ? (
-                        <Alert
-                            severity="warning"
-                            className={styles.alert}
-                        >
-                            Processing...
+                    <div className={styles.bodyAndTags}>
+                        <Typography>
+                            {gratitude?.body}
+                        </Typography>
 
-                            <CircularProgress
-                                color="inherit"
-                                size={20}
-                            />
-                        </Alert>
-                    ) : (
-                        <Alert
-                            severity="success"
-                            className={styles.alert}
-                        >Complete
-                        </Alert>
-                    )}
-
-                    <Typography>
-                        {gratitude?.body}
-                    </Typography>
+                        <div>
+                            {gratitude?.tags.map(tagField => (
+                                <Chip
+                                    key={tagField}
+                                    label={tagField}
+                                />
+                            ))}
+                        </div>
+                    </div>
 
                     <AvatarGroup
                         max={4}
@@ -141,20 +145,14 @@ export function GratitudeDisplay({ gratitude, setIsEditting, className }: Gratit
                                         alt={userMeta.name}
                                         src={userMeta.picture}
                                         className={styles.avatar}
+                                        onClick={() => {
+                                            history.push(`/${userMeta.userId}`); // TODO make this a real link
+                                        }}
                                     />
                                 </Tooltip>
                             );
                         })}
                     </AvatarGroup>
-
-                    <div>
-                        {gratitude?.tags.map(tagField => (
-                            <Chip
-                                key={tagField}
-                                label={tagField}
-                            />
-                        ))}
-                    </div>
                 </div>
             </div>
 
