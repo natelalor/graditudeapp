@@ -19,10 +19,12 @@ import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import wombot from 'wombot';
 
+import { GenerationType, generationTypeDisplay } from '../../../api/enums';
 import { TextField } from '../../../components/form/TextField';
 import {
     Gratitude, putGratitude, uploadFileToS3, UserMeta
 } from '../../../database/db';
+import { renderEnumOptions } from '../../../utils/renderEnumOptions';
 
 import AsyncAutoComplete from './AsyncAutoComplete';
 import styles from './CreateGratitudeForm.module.scss';
@@ -33,6 +35,7 @@ export interface GratitudeFormValues {
     tags: { value: string }[];
     body: string;
     tagInput?: string;
+    generationType: GenerationType;
 }
 
 interface AddEditGratitudeFormProps {
@@ -64,6 +67,7 @@ export function AddEditGratitudeForm({
     });
 
     const body = formMethods.watch('body');
+    const generationType = formMethods.watch('generationType');
 
     const isValidInput = tagFields.length > 0 && userFields.length > 0 && body;
 
@@ -79,7 +83,7 @@ export function AddEditGratitudeForm({
         const generationPrompt = tagFields.reduce((prev, curr) => `${prev} ${curr.value}`, '');
 
         try {
-            await wombot(generationPrompt, 10, (data: any) => {
+            await wombot(generationPrompt, generationType, (data: any) => {
                 data.state === 'generated' && setInProgress(false);
 
                 const photoUrl = data?.task?.photo_url_list?.at(-1);
@@ -109,6 +113,8 @@ export function AddEditGratitudeForm({
                 imageUrl: isNewImage ? await uploadFileToS3(imgSrc) : defaultValues.imageUrl,
                 id: defaultValues?.id || uuidv4(),
                 from: defaultValues?.from || user?.['http://localhost:3000/user_id'],
+                createdAt: defaultValues?.createdAt || new Date().toUTCString(),
+                updatedAt: new Date().toUTCString(),
                 users: formValues.users.map(user => JSON.stringify(user)),
                 tags: formValues?.tags.map(tag => tag.value)
             };
@@ -121,6 +127,7 @@ export function AddEditGratitudeForm({
         }
     });
 
+    console.log(GenerationType.Ukiyoe);
     return (
         <form
             className={clsx(styles.form, className)}
@@ -223,6 +230,16 @@ export function AddEditGratitudeForm({
                     hideRequiredIndicator
                     multiline
                 />
+
+                <TextField<GratitudeFormValues>
+                    name="generationType"
+                    label="State"
+                    required
+                    hideRequiredIndicator
+                    select
+                >
+                    {renderEnumOptions(generationTypeDisplay)}
+                </TextField>
             </FormProvider>
 
             {imgSrc && (

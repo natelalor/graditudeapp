@@ -2,6 +2,8 @@
 import * as AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
+import { GenerationType } from '../api/enums';
+
 
 export interface User {
     id: string;
@@ -27,13 +29,14 @@ export interface UserMeta {
 
 export interface Gratitude {
     id: string;
-    // TODO created at
-    // TODO updated at
+    createdAt: string;
+    updatedAt: string;
     users: string[];
     tags: string[];
     imageUrl: string;
     from: string;
     body: string;
+    generationType: GenerationType;
 }
 
 const CORS_PREFIX = 'https://infinite-ravine-44623.herokuapp.com/';
