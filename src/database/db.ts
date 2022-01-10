@@ -76,9 +76,10 @@ export const fetchData = (tableName: any) => {
 export const doCustomQuery = async (tableName: string, conditions: {
     propertyName: string;
     propertyValue: string;
+    type?: 'OR' | 'AND';
 }[]) => {
     const params = {
-        Statement: `SELECT * FROM ${tableName} WHERE ${conditions.reduce((prev, curr) => `${prev}${prev === '' ? '' : 'OR '}contains("${curr.propertyName}", '${curr.propertyValue}')`, '')}`,
+        Statement: `SELECT * FROM ${tableName} WHERE ${conditions.reduce((prev, curr) => `${prev}${prev === '' ? '' : curr.type || 'OR'} contains("${curr.propertyName}", '${curr.propertyValue}')`, '')}`,
         ConsistentRead: true || false
     };
 
@@ -112,6 +113,28 @@ export const putGratitude = (gratitude: Gratitude) => putData('Gratitude', grati
 export const query = async (tableName: string, searchTerm: string) => {
     const params = {
         Statement: `SELECT * FROM ${tableName} WHERE contains("lowercaseName", '${searchTerm}') OR contains("lowercaseEmail", '${searchTerm}')`,
+        ConsistentRead: true || false
+    };
+
+    const res = await dynamodb.executeStatement(params).promise();
+
+    return res.Items?.map(item => AWS.DynamoDB.Converter.unmarshall(item));
+};
+
+export const queryById = async (tableName: string, searchTerm: string) => {
+    const params = {
+        Statement: `SELECT * FROM ${tableName} WHERE id = '${searchTerm}'`,
+        ConsistentRead: true || false
+    };
+
+    const res = await dynamodb.executeStatement(params).promise();
+
+    return res.Items?.map(item => AWS.DynamoDB.Converter.unmarshall(item))[0];
+};
+
+export const queryByTags = async (tableName: string, searchTerm: string) => {
+    const params = {
+        Statement: `SELECT * FROM ${tableName} WHERE contains("tags", '${searchTerm}')`,
         ConsistentRead: true || false
     };
 

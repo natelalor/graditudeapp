@@ -3,44 +3,48 @@ import { BungalowOutlined, FaceOutlined, VolunteerActivismOutlined } from '@mate
 import { Route, Switch } from 'react-router-dom';
 
 import styles from './App.module.scss';
+import SearchBar from './components/SearchBar/SearchBar';
 import { AccountPage } from './views/AccountPage/AccountPage';
 import { FeedPage } from './views/FeedPage/FeedPage';
 import { LandingPage } from './views/LandingPage/LandingPage';
 import { NavButtonGroup, SideNav } from './views/LandingPage/components/SideNav';
 import { LoginPage } from './views/LoginPage/LoginPage';
+import { SearchPage } from './views/SeachPage/SearchPage';
 
-
-const navButtonGroups: NavButtonGroup[] = [
-    {
-        title: 'Actions',
-        navButtons: [
-            {
-                name: 'Feed',
-                to: '/feed',
-                icon: BungalowOutlined
-            },
-            {
-                name: 'My account',
-                to: '/account',
-                icon: FaceOutlined
-            },
-            {
-                name: 'Appreciate',
-                to: '/appreciate',
-                icon: VolunteerActivismOutlined
-            }
-        ]
-    }
-];
 
 export default function App() {
-    const { isAuthenticated } = useAuth0();
+    const { isAuthenticated, user } = useAuth0();
+
+    const navButtonGroups: NavButtonGroup[] = [
+        {
+            title: 'Actions',
+            navButtons: [
+                {
+                    name: 'Feed',
+                    to: '/feed',
+                    icon: BungalowOutlined
+                },
+                {
+                    name: 'My account',
+                    to: user?.['http://localhost:3000/user_id'] ? `/account/${user['http://localhost:3000/user_id']}` : '/login',
+                    icon: FaceOutlined
+                },
+                {
+                    name: 'Appreciate',
+                    to: '/appreciate',
+                    icon: VolunteerActivismOutlined
+                }
+            ]
+        }
+    ];
 
     return (
         <div className={styles.root}>
             <SideNav navButtonGroups={navButtonGroups} />
 
             <div className={styles.content}>
+                <SearchBar />
+
                 <Switch>
                     <Route
                         exact
@@ -62,7 +66,7 @@ export default function App() {
 
                     <Route
                         // exact
-                        path="/account"
+                        path="/account/:accountId"
                         component={isAuthenticated ? AccountPage : LoginPage}
                     />
 
@@ -70,6 +74,12 @@ export default function App() {
                         exact
                         path="/feed"
                         component={FeedPage}
+                    />
+
+                    <Route
+                        // exact
+                        path="/search"
+                        component={SearchPage}
                     />
 
                     {/* <Route

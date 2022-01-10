@@ -1,14 +1,15 @@
-import { useAuth0 } from '@auth0/auth0-react';
 import {
-    Avatar, ImageList, ImageListItem, Paper, ToggleButton, ToggleButtonGroup, Tooltip, Typography
+    Avatar, ToggleButton, ToggleButtonGroup, Tooltip, Typography
 } from '@material-ui/core';
 import { PaletteOutlined, PeopleOutlineOutlined } from '@material-ui/icons';
 import { useState, useCallback, FC } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { Route } from 'react-router-dom';
+import { Route, useParams } from 'react-router-dom';
 
+import api from '../../api';
+import Gallery from '../../components/Gallery/Gallery';
 import { RoutedDialogProps } from '../../components/RoutedDialog/RoutedDialog';
-import { doCustomQuery, Gratitude } from '../../database/db';
+import { doCustomQuery, Gratitude, User } from '../../database/db';
 import useAsyncEffect from '../../utils/useAsyncEffect';
 
 import styles from './AccountPage.module.scss';
@@ -22,7 +23,8 @@ export interface AccountPageParams {
 
 
 export function AccountPage({ match, history }: RouteComponentProps<AccountPageParams>) {
-    const { user } = useAuth0();
+    const { accountId } = useParams<AccountPageParams>();
+    const [ user, setUser ] = useState<User>();
     const [ sentGratitudes, setSentGratitudes ] = useState<Gratitude[]>([]);
     const [ receivedGratitudes, setReceivedGratitudes ] = useState<Gratitude[]>([]);
     const [ displayTab, setDisplayTab ] = useState<'sent' | 'received'>('received');
@@ -32,12 +34,14 @@ export function AccountPage({ match, history }: RouteComponentProps<AccountPageP
     };
 
     useAsyncEffect(useCallback(async () => {
-        const userId = user?.['http://localhost:3000/user_id'];
-        if (userId) {
+        const userFromDb = await api.users.getUserById(accountId);
+        setUser(userFromDb);
+
+        if (accountId && userFromDb) {
             setSentGratitudes(await doCustomQuery('Gratitude', [
                 {
                     propertyName: 'from',
-                    propertyValue: userId
+                    propertyValue: accountId
                 }
             ]) as Gratitude[]);
 
@@ -45,23 +49,24 @@ export function AccountPage({ match, history }: RouteComponentProps<AccountPageP
                 {
                     propertyName: 'users',
                     propertyValue: JSON.stringify({
-                        userId,
-                        name: user.name,
-                        picture: user.picture
+                        userId: accountId,
+                        name: userFromDb.name,
+                        picture: userFromDb.picture
                     })
                 }
             ]) as Gratitude[]);
         }
-    }, [ user ]));
+    }, [ accountId ]));
 
     return (
-        <Paper
-            className={styles.paper}
-            elevation={14}
-        >
+        <div className={styles.root}>
             <div
                 style={{
+                    backgroundColor: 'transparent',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     display: 'flex',
+                    flexDirection: 'column',
                     padding: '16px',
                     width: '100%'
                 }}
@@ -75,14 +80,6 @@ export function AccountPage({ match, history }: RouteComponentProps<AccountPageP
                 <div>
                     <Typography>
                         {user?.name}
-                    </Typography>
-
-                    <Typography>
-                        {user?.email}
-                    </Typography>
-
-                    <Typography>
-                        last updated at {user?.updated_at}
                     </Typography>
                 </div>
             </div>
@@ -112,25 +109,7 @@ export function AccountPage({ match, history }: RouteComponentProps<AccountPageP
                 </ToggleButton>
             </ToggleButtonGroup>
 
-            <ImageList
-                sx={{ width: '100%' }}
-                cols={3}
-            >
-                {(displayTab === 'received' ? receivedGratitudes : sentGratitudes).map(gratitude => (
-                    <ImageListItem
-                        key={gratitude.id}
-                        onClick={() => {
-                            history.push(`${match.url}/${gratitude.id}`);
-                        }}
-                    >
-                        <img
-                            src={gratitude.imageUrl}
-                            alt={gratitude.body}
-                            loading="lazy"
-                        />
-                    </ImageListItem>
-                ))}
-            </ImageList>
+            <Gallery gratitudes={displayTab === 'received' ? receivedGratitudes : sentGratitudes} />
 
             {Object.entries(dialogRoutes).map(([ path, DialogComponent ]) => (
                 <Route
@@ -146,7 +125,7 @@ export function AccountPage({ match, history }: RouteComponentProps<AccountPageP
                     )}
                 />
             ))}
-        </Paper>
+        </div>
     );
 }
 

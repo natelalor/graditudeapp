@@ -48,6 +48,12 @@ export function GratitudeDisplay({ gratitude, setIsEditting, className }: Gratit
                                 <Chip
                                     key={tagField}
                                     label={tagField}
+                                    onClick={() => history.push({
+                                        pathname: '/search',
+                                        state: {
+                                            tags: [ tagField ]
+                                        }
+                                    })}
                                 />
                             ))}
                         </div>
@@ -70,7 +76,7 @@ export function GratitudeDisplay({ gratitude, setIsEditting, className }: Gratit
                                         src={userMeta.picture}
                                         className={styles.avatar}
                                         onClick={() => {
-                                            history.push(`/${userMeta.userId}`); // TODO make this a real link
+                                            history.push(`/account/${userMeta.userId}`);
                                         }}
                                     />
                                 </Tooltip>

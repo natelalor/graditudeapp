@@ -1,8 +1,10 @@
+import * as gratitude from './gratitude';
 import * as users from './users';
 
 
 const api = {
-    users
+    users,
+    gratitude
 };
 
 export default api;

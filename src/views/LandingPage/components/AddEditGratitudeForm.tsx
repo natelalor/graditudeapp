@@ -127,7 +127,6 @@ export function AddEditGratitudeForm({
         }
     });
 
-    console.log(GenerationType.Ukiyoe);
     return (
         <form
             className={clsx(styles.form, className)}

@@ -1,0 +1,23 @@
+@use 'src/scss/utils';
+
+.list {
+    overflow: visible;
+    column-gap: utils.spacing(4) !important;
+}
+
+.image {
+    // box-shadow: var(--shadow-5); // optional additional shadow
+    margin-top: utils.spacing(2);
+    margin-bottom: utils.spacing(45);
+
+    &:before { // put box shadow on a psuedo element that is positioned within the image... basicallt padding-top 10 and padding-bottom 13
+        content:"";
+        position:absolute;
+        z-index:-1;
+        top:10px;
+        bottom:13px;
+        left:0;
+        right:0;
+        box-shadow: var(--shadow-11);
+    }
+}

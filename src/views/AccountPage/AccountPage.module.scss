@@ -1,14 +1,13 @@
 @use 'src/scss/utils';
 
 .avatar {
-    height: utils.spacing(12);
-    width: utils.spacing(12);
+    height: utils.spacing(24);
+    width: utils.spacing(24);
 }
 
-.paper {
+.root {
     display: flex;
     flex-direction: column;
     margin: utils.spacing(5);
-    padding: utils.spacing(5);
     gap: utils.spacing(1);
   }
