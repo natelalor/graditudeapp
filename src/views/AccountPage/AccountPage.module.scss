@@ -10,4 +10,8 @@
     flex-direction: column;
     margin: utils.spacing(5);
     gap: utils.spacing(1);
-  }
+}
+
+.popup {
+    position: relative;
+}

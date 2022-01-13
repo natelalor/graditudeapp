@@ -22,7 +22,7 @@ import wombot from 'wombot';
 import { GenerationType, generationTypeDisplay } from '../../../api/enums';
 import { TextField } from '../../../components/form/TextField';
 import {
-    Gratitude, putGratitude, uploadFileToS3, UserMeta
+    Gratitude, putGratitude, uploadFileToS3FromUrl, UserMeta
 } from '../../../database/db';
 import { renderEnumOptions } from '../../../utils/renderEnumOptions';
 
@@ -110,7 +110,7 @@ export function AddEditGratitudeForm({
 
             const updatedGratitude: Gratitude = {
                 ...formValues,
-                imageUrl: isNewImage ? await uploadFileToS3(imgSrc) : defaultValues.imageUrl,
+                imageUrl: isNewImage ? await uploadFileToS3FromUrl(imgSrc) : defaultValues.imageUrl,
                 id: defaultValues?.id || uuidv4(),
                 from: defaultValues?.from || user?.['http://localhost:3000/user_id'],
                 createdAt: defaultValues?.createdAt || new Date().toUTCString(),

@@ -3,8 +3,10 @@ import {
     Avatar, Badge, IconButton, styled, Tooltip
 } from '@material-ui/core';
 import clsx from 'clsx';
-import { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { FC, useContext } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+
+import { UserContext } from '../../../App';
 
 import styles from './SideNav.module.scss';
 
@@ -26,7 +28,9 @@ export interface SideNavProps {
 
 
 export function SideNav({ navButtonGroups }: SideNavProps) {
-    const { user, isAuthenticated } = useAuth0();
+    const { isAuthenticated } = useAuth0();
+    const { user } = useContext(UserContext);
+    const history = useHistory();
 
     return (
         <div className={clsx(styles.root, styles.flex)}>
@@ -43,6 +47,7 @@ export function SideNav({ navButtonGroups }: SideNavProps) {
                         alt={user?.name}
                         src={user?.picture}
                         className={styles.logo}
+                        onClick={() => history.push(`/account/${user?.id || ''}`)}
                     />
                 </StyledBadge>
             ) : (

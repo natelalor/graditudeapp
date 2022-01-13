@@ -1,0 +1,42 @@
+@use 'src/scss/utils';
+
+.root {
+
+}
+
+.profilePictureBox {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: solid green 0px;
+
+    &:hover .editPictureIcon {
+        display: block;
+    }
+
+    &:hover .profilePictureBackground {
+        filter: brightness(0.7);
+    }
+}
+
+.profilePictureBackground {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: contain;
+}
+
+.editPictureIcon {
+    display: none;
+    color: white;
+    position: relative;
+    top: -50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}

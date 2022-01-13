@@ -1,11 +1,16 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import {
-    Avatar, ToggleButton, ToggleButtonGroup, Tooltip, Typography
+    Avatar, Button, Popper, ToggleButton, ToggleButtonGroup, Tooltip, Typography
 } from '@material-ui/core';
-import { PaletteOutlined, PeopleOutlineOutlined } from '@material-ui/icons';
-import { useState, useCallback, FC } from 'react';
+import { PaletteOutlined, PeopleOutlineOutlined, PersonOutline } from '@material-ui/icons';
+import Hamburger from 'hamburger-react';
+import {
+    useState, useCallback, FC, useRef, useContext
+} from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Route, useParams } from 'react-router-dom';
 
+import { UserContext } from '../../App';
 import api from '../../api';
 import Gallery from '../../components/Gallery/Gallery';
 import { RoutedDialogProps } from '../../components/RoutedDialog/RoutedDialog';
@@ -21,13 +26,20 @@ export interface AccountPageParams {
     gratitudeId: string | undefined;
 }
 
-
 export function AccountPage({ match, history }: RouteComponentProps<AccountPageParams>) {
     const { accountId } = useParams<AccountPageParams>();
     const [ user, setUser ] = useState<User>();
+    const { user: loggedInUser } = useContext(UserContext);
     const [ sentGratitudes, setSentGratitudes ] = useState<Gratitude[]>([]);
     const [ receivedGratitudes, setReceivedGratitudes ] = useState<Gratitude[]>([]);
     const [ displayTab, setDisplayTab ] = useState<'sent' | 'received'>('received');
+    const [ open, setOpen ] = useState(false);
+
+    const ref = useRef(null);
+
+    const isCurrentUsersPage = loggedInUser?.id === accountId;
+
+    const { logout } = useAuth0();
 
     const handleDisplayChange = (event: any, newValue: 'sent' | 'received') => {
         setDisplayTab(newValue);
@@ -62,6 +74,49 @@ export function AccountPage({ match, history }: RouteComponentProps<AccountPageP
         <div className={styles.root}>
             <div
                 style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end'
+                }}
+            >
+                <Hamburger onToggle={toggled => setOpen(toggled)} />
+
+                <div ref={ref} />
+
+                <Popper // todo this might be laggy
+                    open={open}
+                    anchorEl={ref.current}
+                    placement="bottom-end"
+                >
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '8px'
+                        }}
+                    >
+                        <Button
+                            onClick={() => history.push(`${history.location.pathname}/edit`)}
+                            variant="contained"
+                        >
+                            <PersonOutline />
+
+                            Edit user
+                        </Button>
+
+                        <Button
+                            onClick={() => logout({
+                                returnTo: window.location.origin
+                            })}
+                            variant="contained"
+                        >
+                            Log out
+                        </Button>
+                    </div>
+                </Popper>
+            </div>
+
+            <div
+                style={{
                     backgroundColor: 'transparent',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -77,11 +132,21 @@ export function AccountPage({ match, history }: RouteComponentProps<AccountPageP
                     className={styles.avatar}
                 />
 
-                <div>
+                <Typography variant="h4">
+                    {user?.name}
+                </Typography>
+
+                {isCurrentUsersPage && !user?.bio && (
                     <Typography>
-                        {user?.name}
+                        Edit your profile to add a bio
                     </Typography>
-                </div>
+                )}
+
+                {user?.bio && (
+                    <Typography>
+                        {user.bio}
+                    </Typography>
+                )}
             </div>
 
             <ToggleButtonGroup

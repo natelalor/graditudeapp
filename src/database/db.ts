@@ -19,6 +19,8 @@ export interface User {
     picture: string;
     sub: string;
     updated_at: string;
+    bio?: string;
+    userName?: string; // TODO assert unique then use this to prettify URL
 }
 
 export interface UserMeta {
@@ -110,6 +112,36 @@ export const putData = (tableName: string, data: any) => {
 
 export const putGratitude = (gratitude: Gratitude) => putData('Gratitude', gratitude);
 
+export const updateUser = (userId: string, fields: {
+    name: string;
+    value: any;
+}[]) => {
+    const ExpressionAttributeValues: {[key: string]: string} = {};
+    let UpdateExpression = 'SET ';
+
+    fields.forEach((field, index) => {
+        const [ [ , attributeName ], [ , value ] ] = Object.entries(field);
+
+        ExpressionAttributeValues[`:${attributeName}`] = value;
+        UpdateExpression += `${attributeName} = :${attributeName}`;
+
+        if (index + 1 < fields.length) {
+            UpdateExpression += ', ';
+        }
+    });
+
+    const params = {
+        TableName: 'Users',
+        UpdateExpression,
+        ExpressionAttributeValues,
+        Key: {
+            id: userId
+        }
+    };
+
+    return docClient.update(params).promise();
+};
+
 export const query = async (tableName: string, searchTerm: string) => {
     const params = {
         Statement: `SELECT * FROM ${tableName} WHERE contains("lowercaseName", '${searchTerm}') OR contains("lowercaseEmail", '${searchTerm}')`,
@@ -143,7 +175,7 @@ export const queryByTags = async (tableName: string, searchTerm: string) => {
     return res.Items?.map(item => AWS.DynamoDB.Converter.unmarshall(item));
 };
 
-export const uploadFileToS3 = async (fileUrl: string) => {
+export const uploadFileToS3FromUrl = async (fileUrl: string) => {
     const res = await fetch(CORS_PREFIX + fileUrl);
 
     if (!res.body) {
@@ -154,10 +186,25 @@ export const uploadFileToS3 = async (fileUrl: string) => {
     const buffer = Buffer.from(arrayBuffer);
 
     const fileExtension = fileUrl.split('?')[0].slice(-4);
-    const fileKey = uuidv4() + fileExtension;
+    const fileKey = `art/${uuidv4() + fileExtension}`;
 
     const params = {
         Body: buffer,
+        Bucket: S3_BUCKET,
+        Key: fileKey
+    };
+
+    await myBucket.putObject(params).promise();
+
+    return `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${fileKey}`;
+};
+
+export const uploadFileToS3 = async (file: File) => {
+    const fileExtension = file.name.split('?')[0].slice(-4);
+    const fileKey = `users/${uuidv4() + fileExtension}`;
+
+    const params = {
+        Body: file,
         Bucket: S3_BUCKET,
         Key: fileKey
     };
