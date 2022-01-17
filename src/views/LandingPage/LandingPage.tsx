@@ -28,7 +28,7 @@ export function LandingPage() {
             elevation={14}
         >
             <AddEditGratitudeForm
-                onDone={() => history.push('/account')}
+                onDone={updatedGratitude => history.push(`/account/${updatedGratitude?.from}/${updatedGratitude?.id}`)}
             />
         </Paper>
     );

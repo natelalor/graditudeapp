@@ -19,10 +19,10 @@ import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import wombot from 'wombot';
 
-import { GenerationType, generationTypeDisplay } from '../../../api/enums';
+import { generationTypeDisplay } from '../../../api/enums';
 import { TextField } from '../../../components/form/TextField';
 import {
-    Gratitude, putGratitude, uploadFileToS3FromUrl, UserMeta
+    Gratitude, putGratitude, uploadFileToS3FromUrl, User
 } from '../../../database/db';
 import { renderEnumOptions } from '../../../utils/renderEnumOptions';
 
@@ -30,17 +30,15 @@ import AsyncAutoComplete from './AsyncAutoComplete';
 import styles from './CreateGratitudeForm.module.scss';
 
 
-export interface GratitudeFormValues {
-    users: UserMeta[];
+export type GratitudeFormValues = Omit<Gratitude, 'users' | 'tags'> & {
+    users: User[];
     tags: { value: string }[];
-    body: string;
     tagInput?: string;
-    generationType: GenerationType;
 }
 
 interface AddEditGratitudeFormProps {
     onDone: (updatedGratitude?: Gratitude) => void;
-    defaultValues?: Gratitude;
+    defaultValues?: GratitudeFormValues;
     className?: string;
 }
 
@@ -54,11 +52,12 @@ export function AddEditGratitudeForm({
     const { user } = useAuth0();
     const { enqueueSnackbar } = useSnackbar();
 
-    const formMethods = useForm<GratitudeFormValues>({ defaultValues: generateDefaultValues(defaultValues) });
+    const formMethods = useForm<GratitudeFormValues>({ defaultValues });
 
-    const { fields: userFields, append: userAppend, remove: userRemove } = useFieldArray<GratitudeFormValues, 'users'>({
+    const { fields: userFields, append: userAppend, remove: userRemove } = useFieldArray<GratitudeFormValues, 'users', 'key'>({
         name: 'users',
-        control: formMethods.control
+        control: formMethods.control,
+        keyName: 'key'
     });
 
     const { fields: tagFields, append: tagAppend, remove: tagRemove } = useFieldArray<GratitudeFormValues, 'tags'>({
@@ -115,7 +114,7 @@ export function AddEditGratitudeForm({
                 from: defaultValues?.from || user?.['http://localhost:3000/user_id'],
                 createdAt: defaultValues?.createdAt || new Date().toUTCString(),
                 updatedAt: new Date().toUTCString(),
-                users: formValues.users.map(user => JSON.stringify(user)),
+                users: formValues.users.map(user => user.id),
                 tags: formValues?.tags.map(tag => tag.value)
             };
 
@@ -237,6 +236,8 @@ export function AddEditGratitudeForm({
                     hideRequiredIndicator
                     select
                 >
+                    {/* TODO fix images not showing on edit with default values */}
+
                     {renderEnumOptions(generationTypeDisplay)}
                 </TextField>
             </FormProvider>
@@ -282,12 +283,4 @@ export function AddEditGratitudeForm({
             </Button>
         </form>
     );
-}
-
-function generateDefaultValues(defaultValues?: Gratitude): GratitudeFormValues | undefined {
-    return defaultValues ? ({
-        ...defaultValues,
-        users: defaultValues.users.map(user => JSON.parse(user)),
-        tags: defaultValues.tags.map(tag => ({ value: tag }))
-    }) : undefined;
 }

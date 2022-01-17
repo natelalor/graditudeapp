@@ -1,23 +1,24 @@
 import {
     Typography, AvatarGroup, Tooltip, Avatar, Chip, Button
 } from '@material-ui/core';
-import {
-    Dispatch, SetStateAction
-} from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Gratitude, UserMeta } from '../../../database/db';
+import { Gratitude, User } from '../../../database/db';
 
 import styles from './GratitudeDisplay.module.scss';
 
 
 interface GratitudeDisplayProps {
     gratitude: Gratitude;
+    users: User[];
     setIsEditting: Dispatch<SetStateAction<boolean>>;
     className?: string;
 }
 
-export function GratitudeDisplay({ gratitude, setIsEditting, className }: GratitudeDisplayProps) {
+export function GratitudeDisplay({
+    gratitude, users, setIsEditting, className
+}: GratitudeDisplayProps) {
     const history = useHistory();
 
     return (
@@ -63,25 +64,21 @@ export function GratitudeDisplay({ gratitude, setIsEditting, className }: Gratit
                         max={4}
                         className={styles.avatars}
                     >
-                        {gratitude.users.map((userString) => {
-                            const userMeta = JSON.parse(userString) as UserMeta;
-
-                            return (
-                                <Tooltip
-                                    title={userMeta.name}
-                                    key={userMeta.userId}
-                                >
-                                    <Avatar
-                                        alt={userMeta.name}
-                                        src={userMeta.picture}
-                                        className={styles.avatar}
-                                        onClick={() => {
-                                            history.push(`/account/${userMeta.userId}`);
-                                        }}
-                                    />
-                                </Tooltip>
-                            );
-                        })}
+                        {users.map((user) => (
+                            <Tooltip
+                                title={user.name}
+                                key={user.id}
+                            >
+                                <Avatar
+                                    alt={user.name}
+                                    src={user.picture}
+                                    className={styles.avatar}
+                                    onClick={() => {
+                                        history.push(`/account/${user.id}`);
+                                    }}
+                                />
+                            </Tooltip>
+                        ))}
                     </AvatarGroup>
                 </div>
             </div>

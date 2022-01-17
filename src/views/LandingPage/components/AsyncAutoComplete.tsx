@@ -1,3 +1,4 @@
+/* eslint camelcase: "off" */
 import {
     Autocomplete, TextField, CircularProgress, InputAdornment, Avatar
 } from '@material-ui/core';
@@ -6,18 +7,32 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { FieldArrayMethodProps } from 'react-hook-form';
 
-import { query, User, UserMeta } from '../../../database/db';
+import { query, User } from '../../../database/db';
 
 import styles from './AsyncAutoComplete.module.scss';
 
 
 interface AsyncAutoCompleteProps {
-    userAppend: (value: Partial<UserMeta> | Partial<UserMeta>[], options?: FieldArrayMethodProps | undefined) => void;
+    userAppend: (value: User, options?: FieldArrayMethodProps | undefined) => void;
 }
 
 export default function AsyncAutoComplete({ userAppend }: AsyncAutoCompleteProps) {
-    const [ users, setUsers ] = useState<Partial<User>[]>([]);
-    const [ value ] = useState<Partial<User>>({});
+    const [ users, setUsers ] = useState<User[]>([]);
+    const [ value ] = useState<User>({
+        id: '',
+        email: '',
+        email_verified: false,
+        family_name: '',
+        given_name: '',
+        'http://localhost:3000/user_id': '',
+        'http://localhost:3000/user_metadata': { isNew: false },
+        locale: '',
+        name: '',
+        nickname: '',
+        picture: '',
+        sub: '',
+        updated_at: ''
+    });
     const [ loading, setLoading ] = useState(false);
     const [ inputValue, setInputValue ] = useState('');
 
@@ -32,12 +47,7 @@ export default function AsyncAutoComplete({ userAppend }: AsyncAutoCompleteProps
             onChange={(event, newValue) => {
                 if (newValue && typeof newValue !== 'string') {
                     setInputValue('');
-
-                    userAppend({
-                        userId: newValue.id,
-                        name: newValue.name,
-                        picture: newValue.picture
-                    });
+                    userAppend(newValue);
                 }
             }}
             freeSolo

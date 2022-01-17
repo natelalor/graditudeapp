@@ -23,12 +23,6 @@ export interface User {
     userName?: string; // TODO assert unique then use this to prettify URL
 }
 
-export interface UserMeta {
-    userId: string;
-    name: string;
-    picture: string;
-}
-
 export interface Gratitude {
     id: string;
     createdAt: string;
@@ -162,6 +156,25 @@ export const queryById = async (tableName: string, searchTerm: string) => {
     const res = await dynamodb.executeStatement(params).promise();
 
     return res.Items?.map(item => AWS.DynamoDB.Converter.unmarshall(item))[0];
+};
+
+export const queryByIds = async (tableName: string, ids: string[]) => {
+    if (ids.length === 0) {
+        return [];
+    }
+
+    const params = {
+        RequestItems: {
+            [tableName]: {
+                Keys: ids.map(id => ({ id: { S: id } }))
+            }
+        },
+        ReturnConsumedCapacity: 'TOTAL'
+    };
+
+    const res = await dynamodb.batchGetItem(params).promise();
+
+    return res.Responses?.[tableName].map(item => AWS.DynamoDB.Converter.unmarshall(item));
 };
 
 export const queryByTags = async (tableName: string, searchTerm: string) => {
