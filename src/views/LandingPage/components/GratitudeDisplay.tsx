@@ -3,6 +3,24 @@ import {
 } from '@material-ui/core';
 import { Dispatch, SetStateAction } from 'react';
 import { useHistory } from 'react-router-dom';
+import {
+    EmailIcon,
+    EmailShareButton,
+    FacebookIcon,
+    FacebookMessengerIcon,
+    FacebookMessengerShareButton,
+    FacebookShareButton,
+    LinkedinIcon,
+    LinkedinShareButton,
+    PinterestIcon,
+    PinterestShareButton,
+    TelegramIcon,
+    TelegramShareButton,
+    TwitterIcon,
+    TwitterShareButton,
+    WhatsappIcon,
+    WhatsappShareButton
+} from 'react-share';
 
 import { Gratitude, User } from '../../../database/db';
 
@@ -20,6 +38,9 @@ export function GratitudeDisplay({
     gratitude, users, setIsEditting, className
 }: GratitudeDisplayProps) {
     const history = useHistory();
+
+    const urlBase = window.location.origin.replace('localhost', '0.0.0.0');
+    const shareUrl = `${urlBase}/account/${gratitude.from}/${gratitude.id}`;
 
     return (
         <div className={className}>
@@ -96,6 +117,45 @@ export function GratitudeDisplay({
                 >
                     Edit
                 </Button>
+
+                <EmailShareButton url={shareUrl}>
+                    <EmailIcon />
+                </EmailShareButton>
+
+                <FacebookShareButton url={shareUrl}>
+                    <FacebookIcon />
+                </FacebookShareButton>
+
+                <FacebookMessengerShareButton
+                    url={shareUrl}
+                    appId="487141952337156" // TODO hide in an env variable
+
+                >
+                    <FacebookMessengerIcon />
+                </FacebookMessengerShareButton>
+
+                <WhatsappShareButton url={shareUrl}>
+                    <WhatsappIcon />
+                </WhatsappShareButton>
+
+                <LinkedinShareButton url={shareUrl}>
+                    <LinkedinIcon />
+                </LinkedinShareButton>
+
+                <PinterestShareButton
+                    url={shareUrl}
+                    media={gratitude.imageUrl}
+                >
+                    <PinterestIcon />
+                </PinterestShareButton>
+
+                <TelegramShareButton url={shareUrl}>
+                    <TelegramIcon />
+                </TelegramShareButton>
+
+                <TwitterShareButton url={shareUrl}>
+                    <TwitterIcon />
+                </TwitterShareButton>
             </div>
         </div>
     );
